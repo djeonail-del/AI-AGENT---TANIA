@@ -1,0 +1,665 @@
+[08/02/26, 20.12.28] Ricky Gunawan: ‎Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them.
+[08/02/26, 20.12.28] .: Halo bro ricky, ini djeon yg di ig
+[08/02/26, 20.36.53] Ricky Gunawan: Malam
+[08/02/26, 20.37.04] Ricky Gunawan: Mau tanya untuk bikin automation nya
+[08/02/26, 20.37.07] Ricky Gunawan: Apakah bisa?
+[08/02/26, 20.51.52] .: jadi kebutuhannya untuk ambil data dari bank statement ya?
+[08/02/26, 21.36.21] Ricky Gunawan: Dari email kan biasa di kirim yang ada passwords nya, mau di jadikan sheet
+[09/02/26, 00.26.57] .: Bisa bro
+[09/02/26, 00.27.09] .: Untuk format sheetnya sudah ada?
+[09/02/26, 09.18.35] Ricky Gunawan: Lom ada
+[09/02/26, 09.18.52] Ricky Gunawan: Yang kmrn di jual itu ada contoh nya ngk?
+[09/02/26, 09.19.15] Ricky Gunawan: Itu ada sheet nya? Kalau ngk salah itu udh ada Dashboard nya jg kan
+[09/02/26, 09.19.24] Ricky Gunawan: Kalau di gabung ke situ bisa?
+[09/02/26, 09.19.44] Ricky Gunawan: Sama di tambah lagi bbrp kolom info
+[09/02/26, 09.19.57] Ricky Gunawan: Brp ya harganya?
+[09/02/26, 14.04.50] .: Bisa bro 👍
+
+Flow-nya: PDF bank statement (walau pakai password) dikirim ke bot Telegram, lalu kita otomatis extract datanya dan masuk ke Google Sheet + dashboard.
+Bisa digabung dengan setup Autofint yang kemarin dan ditambah kolom info sesuai kebutuhan.
+
+Harga:
+Rp3,5 jt (1 format bank)
+Rp4,5–6 jt kalau multi-bank / format beda.
+
+Kalau oke, boleh kirim 1 contoh PDF statement + sheet-nya, kita langsung mulai
+[09/02/26, 14.10.32] Ricky Gunawan: Harga nya bisa kurang?
+[09/02/26, 14.22.41] .: untuk 1 format banknya bisa saya bantu di 3jt ya kak
+[09/02/26, 15.31.31] Ricky Gunawan: Mungkin 
+- 1 statement bank passwords di email jadi sheet
+- 1 statement kartu kredit password yang di email jadi sheet pengeluaran
+- ⁠email notifikasi transaksi bank di tambahkan jadi info di sheet dgn tgl dan jumlah yang sama sebagi info tambahan 
+- ⁠notifikasi dari market place di tambahkan jadi info di pembelian dan di cocokan di rek koran
+[09/02/26, 15.32.01] Ricky Gunawan: Ditambah yang struk foto manual
+[09/02/26, 16.23.03] .: email notifikasi jadi masuk di sheet sebagai apa kak?
+[09/02/26, 16.23.39] Ricky Gunawan: Update row, atau kalau lom ada create new row
+[09/02/26, 16.25.13] .: lalu notifikasi marketplace dan cocokan rek koran makusdnya bagaimana ya kak?
+[09/02/26, 16.42.31] Ricky Gunawan: Di email kan ada notifikasi transaksi pembelian dari marketplace seperti Tokopedia, kadang kita bayar pakai kartu kredit atau bank transfer
+[09/02/26, 16.42.54] Ricky Gunawan: Itu di cocokan ke sheet utama yang ada mutasi pembayaran tsb
+[09/02/26, 16.43.08] Ricky Gunawan: Jadi di sheet mya bisa lebih detail
+[09/02/26, 17.07.30] .: jadi ada detail catatan transaksi di sheetnya melengkapi input sebelumnya dari bank statement/mutasi ya kak?
+[09/02/26, 17.07.49] .: jadi flownya input mutasi dulu lalu notifikasi yg lain
+[09/02/26, 17.08.52] Ricky Gunawan: Bisa bebas yang mana duluan, tp sih biasanya kan mutasi bulanan di kirim nya akhir bulan setelah dpt email notifikasi transaksi individual
+[09/02/26, 17.14.49] Ricky Gunawan: Iya benar, lengkapi data di row tsb
+[09/02/26, 17.15.26] Ricky Gunawan: Jadi data nya lengkap, beli brg apa, qty, brp harga, di mana, bayar pakai apa
+[09/02/26, 17.15.42] .: untuk kategorinya bagaimana kak untuk setiap transaksi credit/debit?
+[09/02/26, 17.29.38] Ricky Gunawan: Iya kategori nya diperluas
+[10/02/26, 12.24.26] Ricky Gunawan: Siang kak
+[10/02/26, 13.19.41] .: Halo siang kak
+[10/02/26, 13.20.01] .: Kita bisa jadikan mutasi/statement sebagai data utama, lalu email notifikasi bank, marketplace, dan foto struk melengkapi transaksi yang sama (update row, bukan duplikat).
+
+Jadi 1 transaksi di sheet isinya lengkap: kategori, barang, qty, harga, merchant, dan metode bayar.
+[10/02/26, 20.15.12] Ricky Gunawan: Iya harus nya gitu, semua di 1 sheet
+Tp mutasi email dari bank biasanya datang belakangan di akhir bulan, jadi sdh transaksi duluan
+Jadi harus bisa bolak balik tdk masalah
+[10/02/26, 20.16.27] Ricky Gunawan: Dan ada bbrp rek seperti gopay, shopeepay, trf bank rek lain
+Jadi harus bisa di catat pindah rek
+[11/02/26, 13.08.13] .: Bisa kak, kalau melihat tambahan scope tadi (multi rekening, rekonsiliasi bolak-balik, email marketplace, kartu kredit, OCR struk), ini sudah masuk custom financial automation system ya.
+
+Untuk full system seperti itu estimasinya di range Rp8–10 jt tergantung kompleksitas final.
+
+Kalau mau lebih ringan, kita bisa kerjakan bertahap mulai dari parsing statement dulu (Rp3 jt), lalu lanjut ke matching & marketplace di tahap berikutnya
+[11/02/26, 13.20.26] Ricky Gunawan: 8-10jt bisa kurang? Harganya
+[11/02/26, 13.20.57] Ricky Gunawan: Sama yang udh ada dashboard nya spt apa ya? Bisa di kirimkan contoh nya
+[11/02/26, 13.21.18] Ricky Gunawan: Yang sdh ada itu kan bisa foto struk ya
+[11/02/26, 14.32.40] .: Untuk paket lengkap seperti itu kita bisa di 8jt all-in semua fitur itu ya kak
+
+Di bawah itu cukup berat karena logic matching & rekonsiliasinya lumayan kompleks.
+
+Kalau oke, kita finalkan scope dan saya kirim timeline pengerjaannya ya
+[11/02/26, 14.32.53] .: ini contoh dashboardnya kak
+kak, ini contoh dashboard-nya:
+https://docs.google.com/spreadsheets/d/1Mj-VlO86Nur98lWibmcFMqhQAfcDVXL4faYJ09LCImc/edit?usp=drivesdk
+[11/02/26, 14.33.01] .: iya kak bisa
+[11/02/26, 15.11.43] Ricky Gunawan: Brp lama time line nya?
+[11/02/26, 15.12.26] .: 7 hari kerja ya kak
+[11/02/26, 15.19.31] Ricky Gunawan: Nanti mentah nya file workflow nya dan program nya untuk saya
+[11/02/26, 15.19.37] Ricky Gunawan: Dan host nya di tmpt saya
+[11/02/26, 15.19.43] Ricky Gunawan: Sampai bisa jalan
+[11/02/26, 17.12.30] .: Iya betul kak
+[11/02/26, 17.12.47] .: nanti saya buat dokumentasinya juga kalau kedepannya kakak mau edit sendiri
+[11/02/26, 17.42.36] Ricky Gunawan: Nanti kedepan nya bisa tambah fitur?
+[11/02/26, 17.45.28] .: Bisa kak, kalau kedepannya ada error pasti saya bantu tapi untuk penambahan fitur ada biaya tambahan ya kak
+[11/02/26, 17.45.40] .: kecuali kalau kakak mau tambah/edit sendiri
+[11/02/26, 17.48.17] Ricky Gunawan: Jadi ini connect nya ke google drive, gmail, wa trus ap lagi?
+[11/02/26, 17.48.22] Ricky Gunawan: Sheet
+[11/02/26, 17.51.08] .: untuk email notifikasi dari bank itu maksudnya screenshot/pdf lalu di download dan kirim telegram atau bagaimana kak?
+[11/02/26, 17.51.41] .: atau mungkin kita bisa set gmeet kak supaya lebih jelas
+[11/02/26, 17.55.16] Ricky Gunawan: Langsung ambil dari gmail, automatic begitu ada email masuk dgn subject tsb
+[11/02/26, 17.55.40] Ricky Gunawan: Langsung diambil sendiri automatis
+[11/02/26, 17.55.58] Ricky Gunawan: Sama bisa jg dari wa kita kirim file pdf manual
+[11/02/26, 18.15.35] .: Oke bisa mas
+[11/02/26, 18.16.02] .: jadi triggernya email masuk dengab subject tertentu ya
+[11/02/26, 19.04.11] Ricky Gunawan: Iya
+[12/02/26, 10.55.21] .: Siang kak
+[12/02/26, 10.55.37] .: Ini workflow diagram sistem automasi keuangannya
+
+Sudah include semua fitur yang kita bahas:
+✅ 6 input sources (termasuk upload PDF manual)
+✅ Auto-matching transaksi
+✅ Multi-rekening
+✅ Rekonsiliasi bolak-balik
+✅ Dashboard lengkap
+
+Kalau oke, kita bisa langsung mulai pengerjaan ya kak
+‎[12/02/26, 10.56.03] .: IMG_1306.PNG ‎document omitted
+‎[12/02/26, 10.56.15] .: ‎image omitted
+[12/02/26, 10.59.50] Ricky Gunawan: coba aku liat dl kak
+[12/02/26, 11.26.36] .: oke kak
+[12/02/26, 13.12.34] Ricky Gunawan: Kalau host sendiri ini bisa multi user? Jadi masing2 punya data sendiri terpisah
+[12/02/26, 14.10.56] .: bisa kak
+[12/02/26, 14.11.06] .: bisa diduplicate workflow dan google sheetnya
+[12/02/26, 14.21.59] Ricky Gunawan: Kalau pakai worksheet yang sama jadi ngk si duplikat bisa ngk multi user?
+[12/02/26, 14.22.54] Ricky Gunawan: Kak ada contoh program yang udh di bikin expense, trial wa nya mau coba flow nya yang sdh ada
+[12/02/26, 14.23.12] Ricky Gunawan: Sama saya kan ngk ada data2 untuk trial nya itu gmn ya
+[12/02/26, 14.40.05] .: Untuk pdf bank statement, marketplace dll belum ada datanya kak?
+[12/02/26, 14.40.13] .: bisa juga kak
+[12/02/26, 18.13.39] Ricky Gunawan: Lom ada nih
+[12/02/26, 18.13.52] Ricky Gunawan: Ada bisa data sample?
+[12/02/26, 18.21.24] .: Bisa kak saya buatkan samplenya
+[23/02/26, 14.15.56] .: Halo kak, mau saya buatkan sample data dan demonya dulu?
+[23/02/26, 14.31.11] Ricky Gunawan: Boleh
+[23/02/26, 14.31.19] Ricky Gunawan: Tp saya ada mau bbrp perubahan
+[23/02/26, 15.16.31] .: Oke kak, bisa coba kirim detail perubahannya ya kalau sudah ada
+[23/02/26, 15.34.52] Ricky Gunawan: Ok
+[23/02/26, 15.35.00] Ricky Gunawan: Data sample nya bisa ada ?
+[23/02/26, 18.04.21] .: Bisa kak
+[24/02/26, 11.27.01] Ricky Gunawan: Siang mas
+[24/02/26, 11.31.06] Ricky Gunawan: Perlu di tambahkan reimburse juga, jadi misal 
+1. Beli barang untuk kantor lewat marketplace / offline tapi di talangai dulu, sehingga uang mya udh keluar dari cc tertentu atau rek tertentu, harus di tag 🏷️ lalu nanti bisa di rekap untuk buat laporan reimburse
+2. ⁠nanti kalau sdh di trf dari kantor bisa di tandai lunas dan uang nya sdh di cekmasuk rek
+3. ⁠bisa jg pembelian brg kantor lewat akun marketplace saya tapi yang bayar langsung oleh kantor jadi tdk perlu di reimburse, tp bukti nya perlu di kasih ke kantor
+[24/02/26, 11.31.15] Ricky Gunawan: Jadi perlu extra tag
+[24/02/26, 11.43.33] Ricky Gunawan: Lalu sheet nya di tag atau keterangan
+[24/02/26, 11.44.06] Ricky Gunawan: Krn nanti kedepan nya tiap barang nya mau di list belanja apa spt jadi aset gitu
+[24/02/26, 11.45.40] Ricky Gunawan: Dan rekapan email dari sekuritas untuk jual beli saham , reksadana dll jg di catat di sheet investasi, krn ada top up dan pengambilan dana dari rek RDN ke rek utama
+[24/02/26, 13.15.47] Ricky Gunawan: Yang perlu di catat dari
+1 . market place ( spt tokopedia, shopee, blibli, lazada)
+2 . Rek bank ( bbrp bank , bbrp akun dlm 1 bank) 
+3. Bank RDN (saham)
+4. ⁠kartu kredit 
+5. ⁠emoney( gopay, shopee pay, grab, emoney)
+6. ⁠invest ( stockbit, tokocrypto, dll berbagai sekuritas) saham, reksadana, emas dll
+7. ⁠asuransi
+8. ⁠pencatatan reimburse kantor
+9. ⁠aset (beli mobil, rmh , hp dll)
+10. ⁠point / miles bonus cc
+11. ⁠tagihan karti kredit
+12. ⁠tagihan rutin (langganan)
+13. ⁠catat foto dari wa manual
+14. ⁠upload data manual dari wa (pdf, excel)
+[24/02/26, 13.16.29] Ricky Gunawan: Harus di bagi dan di pecah prioritas nya dan tahapan kerja nya jadi ngk usah semua langsung
+[24/02/26, 13.56.50] Ricky Gunawan: Belanja 
+Scan qris/ debit/trf -> bayar -> fwd bukti payment qris ke wa -> kadang foto struk belanja ke wa -> kadang kasih keterangan di wa ( belanja apa, utk apa, project apa, tag, berhub dgn apa , keyword) -> AI catat ke sheet ( tgl, jam, nama tmpt, alamat, barang nya, qty, harga, harga total bayar, metode bayar (cc apa, bank apa, qris /cc/ trf, cash, pakai uang cash kantor, kartu debit kantor) kategori ( makan minum, belanja, service, topup, park, asuransi) , note/ keterangan, berhub dgn project apa (renov rumah 1, mobil 1, bangun ruko 1, dll), tag ( ) , link foto bon, reimburse kantor, keperluan kantor
+Lalu respon reply wa tsb utk cek ulang
+
+Di catat sementara dl
+Nanti kalau dapat data dari email ( invoice ) bisa di sertakan lagi ke folder tsb dan di tag AI done di email tsb
+
+Nanti akhir bln begitu dpt statement dari rek bank dan statement dari tagihan kartu kredit setelah data di jadikan sheet dari pdf yang passport protected 
+Data di jadikan sheet masing2 rek 
+Lalu akan di cocokan ulang dari awal 
+Dan transaksi yang ada data( bon atau ada pernah di catat sheet) akan di copy ke sheet utama pakai yang dari bank spy lengkap datanya 
+
+Catat dan crosscheck pindah dana dari rek satu ke lainnya atau ke CC atau ke emoney kalau sdh di cek tandai dgn tulisan “checked match”
+
+-
+Belanja untuk kantor yang akan di reimburse 
+Sama bayar nanti kasih keterangan kantor project apa
+Nanti di note lom si ganti oleh kantor
+
+Reply wa nya dengan detail nya (barang, tempt beli, metode bayar )dan link foto bon nya
+
+Nanti kalau ada trf masuk dgn jumlah tsb maka di cocokan dan di mark “done reimburse “
+
+-
+Hitung per hari dan buat mapping money flow (sankey diagram) per bln
+Untuk tahu brp uang saat ini
+Dari rek koran semua tapi yang pindah rek tdk di hitung
+Hanya pemasukan murni (bukan pindah rek sendiri) 
+Dan pengeluaran sendiri (bukan belanja kantor)
+Dan pengeluaran kantor reimburse 
+Saldo saham, saldo RDN, saham yang di pegang, reksadana dll
+[24/02/26, 22.09.39] .: Baik bisa mas
+[24/02/26, 22.10.48] .: Mau saya buatkan frontend webappnya juga mas? jadi bisa diakses dari web dan bisa diberi akses beberapa user seperti admin/owner
+[24/02/26, 22.11.04] .: tampilannya seperti autofint.id
+[24/02/26, 22.21.10] Ricky Gunawan: ini autofint punya mas?
+[25/02/26, 08.34.44] .: iya mas itu yg autofint
+[25/02/26, 08.49.57] Ricky Gunawan: iya boleh jg ui spt itu ok
+[25/02/26, 08.50.49] Ricky Gunawan: sdh mirip hanya perlu email, reimburse, double check, detail data
+[25/02/26, 10.13.43] .: oke saya buatkan SOWnya dulu ya mas
+[25/02/26, 10.30.31] Ricky Gunawan: Ok
+[25/02/26, 10.31.33] Ricky Gunawan: Tp nanti di setup nya n8n saya bisa?
+[25/02/26, 10.31.47] Ricky Gunawan: Di setup kan
+[25/02/26, 10.55.14] Ricky Gunawan: Brp lama ya kira2
+[25/02/26, 19.11.12] Ricky Gunawan: Setelah foro struck nanti data nya di extract dan masuk sheet, nanti AI cocokan berdasarkan tgl transaksi, jam transaksi, jumlah transaksi, nama merchant nya kalau ke 4 data itu sama atau mendekati bisa di cocokan antara data dari foto struk, data dari email / wa bukti trf gopay/bank/ market place, dgn bank / CC statement
+[25/02/26, 19.11.31] Ricky Gunawan: Kapan bisa pak?
+[25/02/26, 19.37.50] .: oke mas
+‎[25/02/26, 19.38.47] .: SOW Ricky Phase1 ID.pdf • ‎7 pages ‎document omitted
+[25/02/26, 19.39.29] .: iya mas bisa pakai n8n punya sendiri
+[25/02/26, 19.49.19] Ricky Gunawan: Mas ada flow diagram nya?
+[25/02/26, 19.49.28] Ricky Gunawan: Kalau phase 2?
+[25/02/26, 19.50.47] Ricky Gunawan: Yang 2-4 nya
+[25/02/26, 19.52.20] Ricky Gunawan: Biaya, scope dan time line nya
+[25/02/26, 19.52.38] Ricky Gunawan: Sama kalau host sendiri di n8n atau hostinger atau ada yang lain?
+[25/02/26, 20.02.36] Ricky Gunawan: Ini bayar nya bisa lewat platform?
+[25/02/26, 21.35.52] .: oiya mas saya kirimkan yg lengkapnya besok ya
+[25/02/26, 21.36.35] .: untuk host n8n saya rekomendasi pakai vps hostinger mas
+[25/02/26, 21.36.55] .: Ini untuk pembayaran yg mana mas?
+[25/02/26, 22.54.00] Ricky Gunawan: ini lbh murah ya? tapi setting nya lbh sulit?
+[25/02/26, 23.04.13] Ricky Gunawan: dari sribu
+[26/02/26, 00.47.25] Ricky Gunawan: 2.2 Satu Google Sheet terpusat dengan detail transaksi lengkap: tanggal, merchant, jumlah,
+metode bayar, kategori, dan catatan. *(dan debit/kredit, Nama barang dan qty, serta tag)*
+-sheet lain berisi hasil parser pdf mutasi per bank (jadi ada file data mentah nya di lanjut perbulan berlanjut
+3.1 • Trigger Gmail berdasarkan subject/pengirim tertentu: notifikasi transaksi bank, konfirmasi
+order marketplace (Tokopedia, Shopee, Blibli, Lazada, *gopay, grab* ), notifikasi kartu kredit, dan update
+platform investasi.
+3.2 • Mendukung satu format bank per konfigurasi pada Phase 1 — format bank tambahan
+tersedia di phase berikutnya. *( serta mendukung email pdf dari tagihan kartu kredit dibuatkan sheet sendiri per kartu kredit)*
+- *setelah di phase statement bank/kartu kredit. AI harus cek jumlah saldo mutasi di apakah penjumlahan automatis sum di sheet setelah di phase sama dengan angka di pdf*
+*untuk memastikan tdk ada kesalahan phase data*
+
+hasil phase dari email transaksi dari berbagai channel spt market place dll, di buatkan di sheet lain berdasarkan channel berisi transaksi detail pembelian brg ( nama channel , tgl, no invice, vendor, nama barang, keterangan brg, qty, mata uang asing, kurs,  harga satuan, harga total, debit/kredit (refund), metode bayar (cc bca , cc maybank bmw, cc maybank infinite, cc lain, qris, trf bca, va dll), kategori, project, keterangan , reimbure kantor, tag, tgl reimburse, reimburse ke mana.
+
+harus di siapkan juga untuk multi user, multi bank / cc, multi currency , multi investasi ( saham, reksadana, emas, crypto, dll)
+semuanya tetap pakai kategori, sub kategori, jenis transaksi, tag
+[26/02/26, 00.47.43] Ricky Gunawan: sisa nya sdh ok sih mas
+[26/02/26, 00.49.11] Ricky Gunawan: ini di bagi jd 4 phase jd pembayarannya jd 8 tahap ya? 
+setiap phase 2jt. di bagi di dp awal dan delivered
+[26/02/26, 12.01.06] .: Oke mas saya lengkapi dulu ya
+[26/02/26, 16.31.50] Ricky Gunawan: Ok
+[26/02/26, 18.21.40] Ricky Gunawan: Gmn mas apakah sdh ada?
+‎[27/02/26, 01.25.38] .: SOW_Ricky_FullSystem_v2.pdf • ‎9 pages ‎document omitted
+[27/02/26, 08.15.26] Ricky Gunawan: Pagi mas
+[27/02/26, 08.15.56] Ricky Gunawan: Wah naik nya banyak jg ya, kalau 12 jt gmn? Tapi tetap yang lengkap semua itu tdk kurangi?
+[27/02/26, 08.16.40] Ricky Gunawan: Opsi hemat ini maksudnya gmn? Hemat biaya yang 15jt atau hemat bulanan biaya n8n nya?
+[27/02/26, 08.17.28] Ricky Gunawan: Kerugian pakai typescript drpd langsung di n8n apa ya?
+[27/02/26, 11.36.55] .: Pagi mas, oke 12 jt bisa ya dengan SOW yg sama tanpa dikurangi
+[27/02/26, 11.37.21] .: Soal TypeScript itu keuntungannya lebih ke sisi teknis:
+- Lebih stabil & scalable untuk sistem sekompleks ini
+- Error handling & logging lebih proper, jadi kalau ada issue lebih mudah di-trace
+- Performance lebih baik, tidak ada overhead dari workflow engine
+- Deploy di 1 VPS bareng web app-nya, infrastruktur lebih clean dan hemat biaya bulanan Mas
+
+Satu-satunya bedanya: tidak ada visual workflow seperti n8n. Tapi untuk sistem sebesar ini justru TypeScript yang lebih solid secara engineering.
+
+Kalau Mas oke, kita mulai dengan DP 50% ya ‎<This message was edited>
+[27/02/26, 13.55.35] Ricky Gunawan: type script itu jadi kita perlu hosting atau gmn? jadi sebagian di proses dulu di typescript baru nanti lempar ke n8n?
+[27/02/26, 13.55.42] Ricky Gunawan: bulananya saya perlu apa saja?
+[27/02/26, 13.55.53] Ricky Gunawan: dan gmn maintanance nya dan bila ada masalah?
+[27/02/26, 13.56.09] Ricky Gunawan: kalau ada bug gitu gmn garansi nya?
+[27/02/26, 13.56.36] Ricky Gunawan: vps nya kita host sendiri di mana? sorry masih awam hehe
+[27/02/26, 13.58.16] Ricky Gunawan: dp 50% dari phase 1 saja dl kan
+[27/02/26, 13.58.38] Ricky Gunawan: biaya vps nya brp ya per bln? dan di mana?
+[27/02/26, 14.04.33] .: Hehe gapapa Mas, saya jelasin satu-satu ya 🙏
+[27/02/26, 14.07.41] .: *TypeScript itu gimana?*
+Jadi TypeScript itu bahasa pemrograman — kode automation-nya saya tulis pakai TypeScript, lalu di-deploy (dijalankan) di VPS. Tidak pakai n8n sama sekali, semua prosesnya langsung di server. Lebih simpel, 1 server handle semuanya: automation + web app + database.
+
+*Setiap bulan Mas perlu bayar apa?*
+1. VPS Hostinger — sekitar Rp 80-130rb/bulan
+2. Gemini API (untuk AI parsing email, OCR struk, input WA) — bisa dapat gratis 3 bulan di awal, setelahnya estimasi Rp 50-150rb/bulan tergantung volume transaksi
+3. WhatsApp (Waha) — gratis, self-hosted di VPS yang sama
+
+Jadi 3 bulan pertama Mas cukup bayar VPS-nya aja 🙏
+
+*VPS itu apa?*
+VPS itu server virtual yang kita sewa — kayak "komputer online" yang nyala 24 jam. Nanti saya bantu setup-nya sampai jalan.
+
+*Maintenance & bug?*
+Saya kasih garansi bug fix 30 hari setelah setiap phase selesai — kalau ada yang error langsung saya perbaiki tanpa biaya tambahan. Setelah 30 hari, untuk bug/error tetap saya bantu, untuk penambahan fitur baru ada biaya tambahan ya.
+[27/02/26, 14.08.13] .: DPnya 50% dari total keseluruhan ya mas
+[27/02/26, 15.40.52] Ricky Gunawan: oh ok paham, jd kalau n8n istilahnya ada mudah interface untuk awam. tapi TypeScript langsung bypas n8n semua
+[27/02/26, 15.42.03] Ricky Gunawan: tapi concern saya, untuk awam spt saya nanti kalau mau edit2 jd susah jg ya tdk paham bahasa progam. kalau n8n kan interface nya lbh mudah di rubah2 sendiri kalau perlu hal sederhana. itu gmn
+[27/02/26, 15.43.13] Ricky Gunawan: DP nya per phase aja ya mas. soalnya kan sama sama blm kenal. jumlah nya kan besar jg
+[27/02/26, 15.43.36] Ricky Gunawan: toh kalau time frame per phase nya kan 1 minggu saja jd cepat
+[27/02/26, 19.30.39] .: justru lebih mudah mas nanti dihubungkan ke claude code, jadi kedepannya kalau mas mau edit bisa hanya dengan prompt saja
+[27/02/26, 19.31.00] .: boleh mas jadi paymentnya per phase ya
+[27/02/26, 21.24.53] Ricky Gunawan: Dihub ke claude itu maksudnya kalau mau edit bisa di kasih promt saja nanti dia bisa rubah?
+[27/02/26, 21.25.03] Ricky Gunawan: Bayar lagi ngk cloud nya?
+[27/02/26, 21.25.10] Ricky Gunawan: Ok
+[27/02/26, 21.42.32] .: betul mas, jadi kalau mau edit, tinggal ketik dalam bahasa biasa ke Claude Code, nanti dia yang ubah sendiri di kode tanpa perlu paham programming
+
+Biayanya butuh Claude Pro ~$20/bulan tapi opsional kalau tidak mau, perubahan tetap bisa lewat saya
+‎[27/02/26, 21.42.54] .: SOW Ricky FullSystem v2.pdf • ‎10 pages ‎document omitted
+[27/02/26, 21.42.54] .: ini updatenya ya mas
+[27/02/26, 22.41.40] Ricky Gunawan: Claude itu nanti bisa di perintah untuk misalnya sambung data ke odoo?
+‎[28/02/26, 00.14.40] Ricky Gunawan: SOW_Ricky_FullSystem_v2.pdf • ‎9 pages ‎document omitted
+[28/02/26, 00.14.56] Ricky Gunawan: berikut ada update sedikit pak
+[28/02/26, 00.21.41] Ricky Gunawan: pak gmn kalau Termin spt ini. spy sama sama enak jg. dan terukur juga progressnya
+Phase 1 Parsing Email & Otomasi Bank Statement Awal Phase 1 DP Rp 2.000.000. Setelah selesai serahterima pelunasan Rp 2.000.000
+Phase 2 OCR Struk & Input Manual via WhatsApp Awal Phase 2 DP Rp 1.500.000. Setelah selesai serahterima pelunasan Rp 1.500.000
+Phase 3 Tracker Investasi, Aset & Keuangan Lanjutan Awal Phase 3 DP Rp 1.500.000. Setelah selesai serahterima pelunasan Rp 1.500.000
+Phase 4 Web App, Multi-User & Visualisasi Lanjutan Awal Phase 4 DP Rp 1.000.000. Setelah selesai serahterima pelunasan Rp 1.000.000
+[28/02/26, 00.32.10] Ricky Gunawan: nanti tlg buat invoice nya atas nama pt rototama berlianplast saja
+[28/02/26, 00.33.27] Ricky Gunawan: dan juga project datanya rahasia, baik perlu di buat surat NDA
+[28/02/26, 00.34.21] Ricky Gunawan: serta ini kan data2 nya saya saat ini lom bisa kasih apakah bisa dibuatkan data dummy dulu  atau gmn?
+[28/02/26, 10.47.30] .: Pagi Mas,
+
+Semua poin sudah oke:
+- SOW sudah diupdate sesuai termin DP + pelunasan per phase ✔️
+- Invoice nanti per termin atas nama PT Rototama Berlianplast ✔️
+- NDA sudah saya siapkan, saya attach sekalian — mohon dicek ya 🙏
+- Data dummy bisa, nanti saya buatkan untuk testing selama pengerjaan
+- Integrasi Odoo bisa, tapi di luar scope SOW sekarang — bisa kita diskusikan sebagai tambahan setelah sistem utama selesai
+
+Kalau SOW dan NDA sudah disetujui, kita langsung kickoff setelah DP Phase 1 masuk ya Mas 🙏
+‎[28/02/26, 10.47.42] .: SOW Ricky FullSystem v2.pdf • ‎10 pages ‎document omitted
+‎[28/02/26, 10.47.42] .: NDA Ricky RGD.pdf • ‎4 pages ‎document omitted
+[28/02/26, 10.55.13] Ricky Gunawan: Ok saya cek
+[28/02/26, 12.39.52] Ricky Gunawan: 4.2 jangka waktu selama nya saja pak
+5.2 kode , settingan dll dikasih ke pihak 2 jadi milik pihak 2
+ Ya pak
+[28/02/26, 12.42.30] Ricky Gunawan: Nanti di kasih ke saya kan pak dokumentasi, source code, db, prompt , saya bila saya perlu kembangkan lagi atau modifikasi bisa di lanjutkan
+[28/02/26, 12.55.35] Ricky Gunawan: Ini udh ok, yang reimburse itu kadang bisa di import list data dlm excel via wa
+Itu isi nya list transaksi pembelian brg lewat market place org lain / belanja lain tapi pakai CC /bank kita, jadi itu kan detail transaksi nya ngk ada di email tp data tsb bisa di kirim terpisah
+
+Misal excel isi nya
+Tgl transaksi, channel media transaksi, pic user name, vendor, nama brg, harga, bayar pakai apa, sdh di reimburse atau lom, tgl reimburse, ke mana, jumlah brp
+‎[28/02/26, 12.57.06] .: NDA Ricky RGD.pdf • ‎4 pages ‎document omitted
+[28/02/26, 12.57.29] .: iya mas nanti saya buatkan dokumentasinya lengkap
+[28/02/26, 12.58.12] .: oke mas
+[28/02/26, 12.58.34] .: kalau boleh tau ini bisnisnya di bidang apa ya mas?
+[28/02/26, 13.06.21] Ricky Gunawan: Di plastik mas
+[28/02/26, 13.23.53] .: Oke mas
+[28/02/26, 13.24.25] .: Saya bisa mulai start kerjain di Selasa minggu depan ya mas
+[28/02/26, 13.24.51] Ricky Gunawan: Iya bisa
+[28/02/26, 13.24.56] Ricky Gunawan: Saya trf senin ya
+[28/02/26, 13.25.30] .: Oke mas
+[28/02/26, 17.03.27] Ricky Gunawan: Mas ini kalau gitu yg 4.2 jangka waktu mending jadi 30 th saja ya, jgn setelah project selesai perjanjian tdk berlaku
+[01/03/26, 00.15.31] .: Oke mas, besok saya update ya
+‎[02/03/26, 11.56.09] .: NDA Ricky RGD.pdf • ‎4 pages ‎document omitted
+[02/03/26, 11.56.31] .: Siang mas, ini update NDAnya ya
+‎[03/03/26, 02.06.46] Ricky Gunawan: ‎image omitted
+[03/03/26, 02.06.54] Ricky Gunawan: sdh di trf ya DP phase 1 2jt
+[03/03/26, 08.36.53] .: Oke, terima kasih mas
+[03/03/26, 08.37.24] .: ini bisa tolong di tanda tangan ya mas nanti kirim balik ke saya
+[03/03/26, 08.58.30] Ricky Gunawan: Ok
+[03/03/26, 16.44.13] Ricky Gunawan: Pak bisa ada dibuatkan data2 nya
+[03/03/26, 18.41.47] .: data samplenya maksudnya mas?
+[03/03/26, 19.42.47] Ricky Gunawan: Data statement
+‎[03/03/26, 23.29.51] Ricky Gunawan: NDA Ricky RGD.pdf • ‎4 pages ‎document omitted
+[03/03/26, 23.30.58] Ricky Gunawan: Sudah di tanda tangan ya
+[03/03/26, 23.31.22] Ricky Gunawan: Apakah sudah mulai kerja?
+[04/03/26, 00.06.29] .: oke mas, nanti saya kirim yg ttd saya juga
+[04/03/26, 00.06.47] .: sudah mas, weekend ini saya kirim updatenya ya
+[04/03/26, 23.04.51] Ricky Gunawan: ok
+[07/03/26, 09.51.40] Ricky Gunawan: Pagi
+[07/03/26, 09.51.50] Ricky Gunawan: Gmn update nya mas?
+[07/03/26, 09.52.01] Ricky Gunawan: Ini udh di ttg?
+[07/03/26, 09.56.55] .: Pagi mas
+‎[07/03/26, 09.57.33] .: NDA Ricky RGD 2.pdf • ‎4 pages ‎document omitted
+[07/03/26, 09.59.07] .: sudah jadi frontendnya lagi mau testing untuk parse emailnya mas
+[07/03/26, 09.59.40] .: mas ada akun google yg bisa dishare ke saya?
+[07/03/26, 10.00.13] .: atau nanti trigger emailnya itu email masuk kemana ya mas?
+[07/03/26, 11.07.05] Ricky Gunawan: Saya bikin baru ya
+[07/03/26, 15.05.29] .: iya boleh mas
+[07/03/26, 23.46.17] Ricky Gunawan: expense.ai.rg@gmail.com
+[07/03/26, 23.46.20] Ricky Gunawan: ini email nya
+[07/03/26, 23.46.28] Ricky Gunawan: butuh password nya atau gmn?
+[07/03/26, 23.47.02] .: iya mas butuh passwordnya juga
+[07/03/26, 23.47.34] Ricky Gunawan: pass: vej4TQH9mke!kad-hpx
+[07/03/26, 23.58.45] .: oke sudah masuk mas, bsk saya lanjut untuk test sample bank statementnya ya
+[07/03/26, 23.59.04] Ricky Gunawan: ok
+[08/03/26, 21.59.27] .: Selamat malam mas,
+
+Sistem sudah selesai sampai Phase 4 ya
+
+Silakan test:
+
+📊 *Dashboard:*
+https://unsurveyed-unrecreant-stefania.ngrok-free.dev/dashboard
+
+💬 *WhatsApp Bot:*
++62 881-0806-70255
+Coba kirim: "makan siang 50rb gopay" atau ketik *laporan*
+
+📄 *Bank Statement:*
+Saya lampirkan beberapa sample PDF (BCA & Mandiri) — coba kirim ke WA bot, nanti otomatis ke-parse masuk ke dashboard.
+
+Untuk CC statement yang password-protected, kirim dulu pesannya:
+"password: 17042001" → lalu kirim PDF-nya
+
+⚠️ *Email parsing* bisa ditest setelah VPS aktif ya — sekarang masih local.
+[08/03/26, 21.59.36] .: Untuk deployment permanen, mohon beli VPS di Hostinger:
+👉 https://hostinger.co.id/vps-hosting
+
+Pilih *KVM 1* atau *KVM 2*.
+
+Setelah beli, kirimkan login credential Hostinger-nya ke saya, nanti saya yang setup semuanya 🙏
+‎[08/03/26, 21.59.44] .: BCA_RekeningKoran_Feb2026.pdf • ‎1 page ‎document omitted
+‎[08/03/26, 21.59.44] .: Mandiri_RekeningKoran_Mar2026.pdf • ‎1 page ‎document omitted
+‎[08/03/26, 21.59.45] .: Mandiri_CC_eBilling_Feb2026_xxxx9093.pdf ‎document omitted
+[08/03/26, 23.18.10] Ricky Gunawan: malam
+[08/03/26, 23.18.12] Ricky Gunawan: ok saya test
+[08/03/26, 23.18.29] Ricky Gunawan: ini saya wa tapi lom ada jawab
+[08/03/26, 23.18.50] Ricky Gunawan: ini google sheet nya msh ada jg kan
+[09/03/26, 09.04.29] .: Halo mas, maaf kemarin komputer saya mati
+[09/03/26, 09.04.54] .: bisa tolong purchase VPSnya dulu mas biar bisa saya online kan
+[09/03/26, 09.05.42] .: untuk databasenya kita pakai supabase ya mas, karena kalau pakai google sheet akan sangat lambat kalau nanti sudah ratusan datanya
+[09/03/26, 09.06.04] .: tapi bisa saya tambahkan fitur sync ke google sheet kalau perlu mas
+[09/03/26, 09.29.09] Ricky Gunawan: Kvm1 saat ini msh cukup kan? Untuk 1th kedepan
+[09/03/26, 09.29.22] Ricky Gunawan: Apa udh langsung yang kvm2?
+[09/03/26, 09.29.40] Ricky Gunawan: Supabase itu aman? Itu apa
+[09/03/26, 09.40.46] Ricky Gunawan: Penting jg harus diperhatikan keamanan data mya pak di semua app harus aman
+[09/03/26, 09.41.38] .: KVM 1 cukup untuk 1 tahun ke depan ya mas
+
+Supabase itu seperti google drive tapi khusus untuk data transaksi, aman, terenkripsi, dan sudah dipakai jutaan startup. kita juga bisa lihat datanya langsung via dashboard juga
+[09/03/26, 09.54.15] .: Siap mas, ini sebagian besar sudah selfhosted di vps seperti backend & WAHA untuk WAnya jadi biar lebih aman
+[09/03/26, 09.55.45] Ricky Gunawan: Host mya di mana datanya? Nanti bayar jg?
+[09/03/26, 09.56.17] Ricky Gunawan: Sync ke google sheet itu 2 ways? Edit dan delete jg
+[09/03/26, 09.57.02] Ricky Gunawan: Waha itu ngk ada kendala ya? Berbayar jg nanti?
+[09/03/26, 09.57.18] Ricky Gunawan: Kalau tele lebih pelan ya
+[09/03/26, 09.59.55] .: supabase ada 2 option ya mas, bisa host di vps kita sendiri atau pakai server dari supabasenya
+
+- kalau pakai vps, kita perlu ambil KVM 2 supaya lancar 
+- ⁠kalau pakai server dari supabase ada versi gratis dengan 500mb untuk database dan 1gb untuk file (sudah cukup untuk project ini) dan kita cukup pakai KVM yg 1 untuk vpsnya ‎<This message was edited>
+[09/03/26, 10.00.59] .: syncnya 1 way ya mas, untuk edit tetap dari webappnya supaya tidak error ya mas
+[09/03/26, 10.02.07] .: WAHA gratis mas kita install di VPS, itu memang WA chatbot unofficial yg umum digunakan
+[09/03/26, 10.02.40] .: karena kalau pakai official dari WA cloud API kita harus bayar per messagenya
+[09/03/26, 10.03.03] .: Telegram jauh lebih cepet sebenarnya mas dan minim error
+[09/03/26, 10.03.29] .: kalau memang mau pakai Telegram malah saya lebih rekomendasikan
+[09/03/26, 10.13.32] Ricky Gunawan: Pakai yang free 500mb data bisa 1-2th ya?
+[09/03/26, 10.14.15] Ricky Gunawan: Jadi sheet nya hanya untuk view doang ya?
+[09/03/26, 10.14.43] Ricky Gunawan: WAHA ini aman?
+[09/03/26, 10.43.31] .: iya mas sudah cukup
+[09/03/26, 10.43.36] .: iya betul mas
+[09/03/26, 10.44.00] .: aman mas karena ini open source dan kita install di server sendiri (bukan pihak ketiga)
+[09/03/26, 11.01.55] Ricky Gunawan: Kalau beli yang kvm1 saya msh bisa host n8n project lain?
+[09/03/26, 11.17.20] .: bisa mas, tapi tidak disarankan supaya tidak menggangu performance backend project yg sekarang
+[09/03/26, 11.17.51] Ricky Gunawan: Kurang kuat? Harus yang kvm2? Arau gmn?
+[09/03/26, 11.18.43] .: iya mas kalau mau dipakai n8n juga better ambil yg kvm 2
+[09/03/26, 11.19.09] Ricky Gunawan: Ow ok
+[09/03/26, 11.29.38] Ricky Gunawan: Pak kalau ada bbrp project di hostinger itu bisa saling liat? Data nya atau seperti ruangan terpisah yang ada kunci nya
+[09/03/26, 11.30.02] Ricky Gunawan: Jadi engineer nya jg ngk bisa saling masuk?
+[09/03/26, 11.39.32] .: kalau dalam 1 vps bisa saling lihat
+[09/03/26, 11.39.44] .: tapi kalau 1 akun hostinger bisa ada beberapa vps
+[09/03/26, 11.39.51] .: vpsnya bisa dikunci
+[09/03/26, 11.40.00] Ricky Gunawan: Isi data nya jg?
+[09/03/26, 11.40.11] .: iya mas
+[09/03/26, 11.40.44] Ricky Gunawan: Kan ini langganan 1 kvm nah bisa bikin bbrp vps kan? Yang tdk saling liat
+[09/03/26, 11.41.06] Ricky Gunawan: Apa harus langganan bbrp kvm
+[09/03/26, 11.44.24] .: KVM 1 itu jenis paket VPSnya mas
+[09/03/26, 11.45.24] .: kalau mau ada beberapa project brarti perlu ada beberapa VPS(KVM)
+[09/03/26, 11.46.01] Ricky Gunawan: Iya jadi langganan bbrp kVM ya
+[09/03/26, 11.46.13] .: iya mas
+[09/03/26, 11.46.18] Ricky Gunawan: Ok
+[09/03/26, 11.49.32] Ricky Gunawan: Server nya pilih lokal di indo atau malay?
+[09/03/26, 11.49.43] Ricky Gunawan: Malay latensi nya 30ms
+[09/03/26, 11.49.56] Ricky Gunawan: Indo 34ms
+[09/03/26, 11.50.10] Ricky Gunawan: Os nya?
+[09/03/26, 11.51.15] .: yg indo saja mas
+[09/03/26, 11.51.20] .: Ubuntu 22.04 LT
+[09/03/26, 11.53.08] Ricky Gunawan: Ok 2th
+[09/03/26, 11.53.25] Ricky Gunawan: Dpt domain
+[09/03/26, 11.54.04] .: iya boleh juga mas nanti domainnya bisa kita pakai untuk link dashboardnya
+[09/03/26, 12.10.43] Ricky Gunawan: Ok saya sdh beli
+[09/03/26, 12.13.44] Ricky Gunawan: ssh root@147.93.81.70
+[09/03/26, 12.28.06] Ricky Gunawan: Sdh ya
+[09/03/26, 12.28.18] Ricky Gunawan: Rgun.cloud nama web nya
+[09/03/26, 12.28.30] Ricky Gunawan: Nanti bisa ada login aja ya jgn langsung masuk
+[09/03/26, 12.29.08] Ricky Gunawan: Gmn spy ngk bisa di cari di google
+[09/03/26, 12.29.18] Ricky Gunawan: Spy ngk muncul di pencarian
+[09/03/26, 12.31.09] .: iya bisa mas
+[09/03/26, 12.31.24] .: secara default memang tidak terindeks di google
+[09/03/26, 12.31.51] .: bisa kirim akses ke hostingernya mas
+[09/03/26, 12.39.36] Ricky Gunawan: Email ricky.gunawan@gmail.com
+[09/03/26, 12.39.46] Ricky Gunawan: Pass : fRTUsHA3
+[09/03/26, 14.28.01] .: oke mas nanti saya coba ya
+[09/03/26, 16.54.44] Ricky Gunawan: Ok
+[09/03/26, 16.54.48] Ricky Gunawan: Bisa tdk?
+‎[09/03/26, 18.13.49] .: Minta OTP ya mas ‎image omitted
+[09/03/26, 18.36.56] Ricky Gunawan: 242891
+[09/03/26, 18.38.00] .: Ok sudah masuk mas
+[09/03/26, 19.55.47] Ricky Gunawan: Pak lagi buat kelas ya
+[09/03/26, 19.56.19] Ricky Gunawan: Itu dikasih liat cara Claude, set up dll ?
+[09/03/26, 21.13.35] .: Iya mas
+[09/03/26, 21.13.49] .: sebagian besar tentang n8n
+[09/03/26, 21.14.02] .: tapi ada bagian claude dan setupnya juga
+[09/03/26, 21.14.15] .: mau join mas? nanti saya invite ke group
+[09/03/26, 21.17.21] Ricky Gunawan: Boleh mas 🙏pengen tau
+[09/03/26, 21.21.36] .: sudah diinvite ke group ya mas, webinarnya tgl 14-15 jam 09.00-12.00 WIB
+[09/03/26, 21.21.44] .: linknya akan dishare di group
+[09/03/26, 21.23.13] Ricky Gunawan: Ok thx ‎<This message was edited>
+[11/03/26, 13.32.15] Ricky Gunawan: Siang pak
+[11/03/26, 13.32.24] Ricky Gunawan: Gmn update nya
+[11/03/26, 13.32.27] Ricky Gunawan: Sdh selesai?
+[11/03/26, 13.32.45] Ricky Gunawan: Bisa di trial?
+[11/03/26, 13.49.14] .: Siang mas
+[11/03/26, 13.49.19] .: sore ini saya update ya
+[11/03/26, 14.06.08] Ricky Gunawan: ok
+[11/03/26, 14.55.06] .: Ada beberapa fitur baru yang  saya tambahkan, bisa dicek langsung ya mas, sudah saya isi dummy data juga untuk demo
+
+*Login Website:*
+🌐 https://rgun.cloud/
+📧 expense.ai.rg@gmail.com
+🔑 admin123
+
+*Test WhatsApp Chatbot:*
+📱 *+62 881-0806-70255*
+Bisa kirim pesan teks, foto struk, atau ketik "help" untuk lihat semua perintah.
+
+*Test Email Parsing:*
+📧 autofintid@gmail.com
+[11/03/26, 15.02.38] Ricky Gunawan: ok saya test nya gmn?
+[11/03/26, 15.02.52] Ricky Gunawan: nanti kalau sdh jln nomor wa nya pakai nomor apa?
+[11/03/26, 15.03.00] Ricky Gunawan: beli lagi atau gmn? nomornya
+[11/03/26, 15.03.57] .: better beli nomor baru saja mas yg dikhususkan untuk chatbot ini
+[11/03/26, 15.04.26] .: bisa test wa ke botnya atau kirim email yg berisi pdf/bank statement
+[11/03/26, 15.04.47] .: dan bisa coba cek uinya mas, kalau mau catat manual dari web juga bisa
+[11/03/26, 15.05.49] Ricky Gunawan: kok login nya ngk bisa masuk nih
+[11/03/26, 15.06.17] .: ok sebentar saya cek dulu
+[11/03/26, 15.10.27] .: bisa coba cek lagi ya mas
+[12/03/26, 14.13.41] .: Selamat siang mas
+[12/03/26, 14.13.57] .: Apa sudah dicoba?
+[12/03/26, 18.20.46] Ricky Gunawan: Sore pak
+[12/03/26, 18.20.51] Ricky Gunawan: Sebagian sdh
+[12/03/26, 18.21.18] Ricky Gunawan: Tp kalau kirim 2 bon dan bukti bayar nya dia bingung ya
+[12/03/26, 19.06.07] .: input bonya melalui apa ya mas?
+[12/03/26, 19.06.24] .: kirim 2 bon melalui WA?
+[12/03/26, 19.13.51] Ricky Gunawan: Kedua nya via wa
+[12/03/26, 19.20.53] .: bisa coba screenshot saat coba ini mas?
+‎[12/03/26, 19.22.53] Ricky Gunawan: ‎image omitted
+‎[12/03/26, 19.23.06] Ricky Gunawan: ‎image omitted
+‎[12/03/26, 19.23.19] Ricky Gunawan: ‎image omitted
+[12/03/26, 19.25.25] .: iya mas karena kedua bonnya menunjukkan informasi yg berbeda meskipun nominalnya sama
+[12/03/26, 19.26.42] .: tujuan kirim 2 bon yg sama untuk apa mas?
+[12/03/26, 19.31.46] Ricky Gunawan: Satu nya bon, satu lagi cara bayar nya
+[12/03/26, 19.32.10] Ricky Gunawan: Kan biasa itu di kirim via email
+[12/03/26, 19.37.11] .: kalau di email biasanya termasuk keduanya ya mas?
+[12/03/26, 19.37.41] .: invoice yg berisi bon dan cara bayarnya dalam 1 email?
+[12/03/26, 19.39.39] .: bisa saya fix ini mas, mau dibuat hanya di email atau fungsi validasinya juga bisa melalui WA?
+[13/03/26, 09.05.36] Ricky Gunawan: ngk bisa krn bukti bayar kan biasanya dr bank/gopay/toped saja
+[13/03/26, 09.06.05] Ricky Gunawan: langsung dr mrk itu
+[13/03/26, 09.06.52] Ricky Gunawan: bisa kedua nya dr email dan dr wa
+[13/03/26, 09.07.09] Ricky Gunawan: krn di wa kadang kita perlu koreksi kesalahan input
+[13/03/26, 09.08.02] Ricky Gunawan: dan juga kadang bon ada salah jg misal metode bayar nya tdk benar hrs nya qris blu tp di tulis nya qris gpay
+[13/03/26, 09.08.15] Ricky Gunawan: atau yg lainnya
+[13/03/26, 09.09.19] Ricky Gunawan: jd dia hrs mikir jg bila dpt yg tanggal, jam, nama vendor yg mirip itu bisa data yg sama
+[13/03/26, 09.09.36] Ricky Gunawan: jgn di fix
+[13/03/26, 09.09.49] Ricky Gunawan: ke salah satu
+[13/03/26, 09.51.19] .: Oke mas paham 
+
+Jadi flow nya:
+- Kirim bon + bukti bayar keduanya via WA
+- Bot akan analisa kedua gambar sekaligus, cocokkan berdasarkan tanggal, jam, nominal, dan vendor
+- Kalau match → digabung jadi 1 transaksi lengkap
+- Kalau ada perbedaan (misal metode bayar berbeda) → bot akan tanya konfirmasi dulu sebelum disimpan
+
+Nanti saya kabarin kalau sudah bisa dicoba lagi ya mas
+[13/03/26, 09.59.13] .: Oiya mas, sesuai kesepakatan, mau infokan tagihan Phase 1-3 ya 🙏
+Sisa yang belum ditransfer 8jt
+[13/03/26, 09.59.38] .: Untuk Phase 4 bisa menyusul setelah saya handover dan buat documentationnya
+[13/03/26, 10.14.42] Ricky Gunawan: Ini ngk selalu kirim 2 bukti ya, bisa aja cuma bon diang jg bisa, jadi ngk selalu 
+
+Soal tetap yang main nya cocokin dgn email 
+
+Krn yang email kan automatic dari bank
+[13/03/26, 10.14.52] Ricky Gunawan: Ow ini udh phase brp ya?
+[13/03/26, 10.19.00] .: jadi AI harus baca konteks struk secara keseluruhan brarti ya mas supaya matching transaksi dengan 2 bon/struk
+[13/03/26, 10.19.57] .: atau cukup kita pakai trigger kalau ada nominal transaksi yg sama + ada kata di merchant atau deskripsi produk yg sama?
+[13/03/26, 10.20.08] .: sudah di phase 4 mas
+[13/03/26, 10.24.23] Ricky Gunawan: Iya
+[13/03/26, 10.24.46] Ricky Gunawan: Baca konteks aja soalnya ada keterangan lain jg kan
+[13/03/26, 10.24.52] Ricky Gunawan: Ow gitu wah cepat ya
+[13/03/26, 10.29.56] Ricky Gunawan: Udh lengkap semua atau kurang yang mana?
+[13/03/26, 10.30.07] Ricky Gunawan: Ada tombol reset?
+[13/03/26, 10.41.00] .: ok bisa mas
+[13/03/26, 10.41.44] .: sudah lengkap semua mas, hanya revisi yg matching bon di wa itu
+[13/03/26, 10.42.16] .: dan nanti menghubungkan nomor WA dan emailnya
+[13/03/26, 10.42.43] .: iya mas, saya prioritaskan ini 😁
+[13/03/26, 10.42.59] .: ada mas tombol reset di pengaturan
+[13/03/26, 10.43.00] Ricky Gunawan: Saya cek dl soalnya lom di coba semua
+[13/03/26, 10.43.09] .: Oke baik mas
+[13/03/26, 10.43.08] Ricky Gunawan: Reset data
+[13/03/26, 10.43.15] .: iya mas
+[13/03/26, 10.43.29] Ricky Gunawan: Email nya apa bisa di connect dl spy bisa saya coba
+[13/03/26, 10.44.28] .: untuk sekarang bisa coba ke autofintid@gmail.com ya mas
+[13/03/26, 10.44.47] Ricky Gunawan: Sama kalau view nya itu kan per bln , bisa tlg tambahkan view optionya di tambah 2025 2024 2026 , H1 2025 , H2 2025
+[13/03/26, 10.44.48] .: tapi pastikan email parsingnya di set di pengaturan dulu mas
+[13/03/26, 10.45.18] .: jadi ai akan baca email dan subjek tertentu sesuai yg di set di pengaturan
+[13/03/26, 10.45.26] .: bisa mas
+[13/03/26, 15.03.07] Ricky Gunawan: Ok saya cek lagi
+‎[13/03/26, 15.24.51] Ricky Gunawan: ‎image omitted
+[13/03/26, 18.34.56] .: iya mas ini chatbot yg sekarang hanya bisa sesuai dengan kata kunci ini
+[13/03/26, 18.35.38] .: bisa tolong cek semuanya ya mas, biar saya revisi sekalian kalau ada lagi
+[13/03/26, 18.42.15] Ricky Gunawan: Iya saya cek dl semua ya
+[13/03/26, 18.53.55] .: iya mas
+[16/03/26, 01.25.54] Ricky Gunawan: Halo teman-teman peserta Webinar AI Automation N8N! 👋
+
+*Terima kasih sudah hadir dan antusias selama 2 hari ini!* 🔥
+
+Berikut info lengkap cara akses semua yang sudah dijanjikan:
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+📚 *MATERI, BONUS & RECORDING*
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ Daftar / login di:
+🔗 *https://djeonail.com/*
+
+2️⃣ Setelah login, pilih menu *Courses* atau langsung ke:
+🔗 *https://djeonail.com/library*
+
+📌 Gunakan *email yang sama* saat kamu purchase webinar ya!
+
+⏳ *Catatan:* Recording Day 1 sudah tersedia. Recording *Day 2 sedang dalam proses upload* — bisa dicek secara berkala ya teman-teman!
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+🤖 *BONUS AUTOFINT — AI Finance App*
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+Semua peserta webinar berhak dapat *AUTOFINT Pro GRATIS 1 BULAN!* 🎉
+
+Cara aktivasi:
+1️⃣ Buka *autofint.id*
+2️⃣ Daftar dengan *email yang sama* saat purchase webinar
+3️⃣ Bonus 1 bulan langsung teraktivasi otomatis ✅
+
+⭐ *BONUS SPESIAL 3 BULAN*
+Buat peserta yang open mic & sharing feedback di *Day 1 maupun Day 2*, kalian dapat *AUTOFINT Pro GRATIS 3 BULAN!*
+
+*Pemenang Day 1:*
+✅ Miko Raharjo
+✅ Eka Suharto
+✅ Lathif Jumatiawan
+✅ Wildan Garda Nusantara
+
+*Pemenang Day 2:*
+✅ Wibyan
+✅ Imam Bhaskara
+✅ Anugrah Agna Rananggana
+✅ Lathif Jumatiawan
+
+Sama caranya — daftar di *autofint.id* pakai email yang sama, bonus 3 bulan langsung aktif! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ *PENTING*
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pastikan daftar menggunakan *email yang sama* saat purchase webinar agar akses & bonus terdeteksi dan aktif secara otomatis.
+
+Kalau ada kendala, reply di sini ya! 😊
+
+Semangat praktik teman-teman! 💪🏼
+*DJEON & Tim*
+[16/03/26, 01.26.21] Ricky Gunawan: mas ini saya mau daftar untuk akses materi nya pakai email apa ya?
+[16/03/26, 10.04.18] .: bisa kirim emailnya mas?
+[16/03/26, 10.04.24] .: nanti saya beri akesnya
+[16/03/26, 23.31.47] Ricky Gunawan: ricky.gunawan@gmail.com
+[16/03/26, 23.31.50] Ricky Gunawan: thx mas
+[17/03/26, 11.13.20] .: Oke mas, bisa coba akses di https://djeonail.com/ ya
+[17/03/26, 11.13.34] Ricky Gunawan: Ok thx
+[17/03/26, 11.17.27] .: sama sama mas
+[17/03/26, 11.17.59] .: Apa ada yg perlu direvisi lagi selain dari yg kemarin mas?
+[17/03/26, 11.34.31] Ricky Gunawan: msh lom sempet cek mas soalnya udah mulai libur
+[17/03/26, 11.34.43] Ricky Gunawan: apa nanti bisa lanjut setelah libur lebaran?
+‎[17/03/26, 11.37.52] Ricky Gunawan: ‎image omitted
+[17/03/26, 11.37.56] Ricky Gunawan: ini pass nya apa ya?
+[17/03/26, 11.38.25] .: Oke bisa mas
+[17/03/26, 11.38.44] .: bisa daftar dengan email yg tadi mas
+[17/03/26, 11.38.53] .: nanti set password sendiri
+[17/03/26, 11.38.56] Ricky Gunawan: sdh daftar. tapi lom terima email
+[17/03/26, 11.39.11] Ricky Gunawan: oh ya udah masuk. thx
+[17/03/26, 11.39.17] .: bisa login saja langsung
+[17/03/26, 11.39.20] .: siap
+[17/03/26, 11.42.03] Ricky Gunawan: ok sip thx
