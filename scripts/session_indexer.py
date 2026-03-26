@@ -17,8 +17,36 @@ import sqlite3
 import argparse
 from datetime import datetime, timezone
 
-SESSIONS_DIR = "/Users/mac/.openclaw/agents/main/sessions"
-WORKSPACE_DIR = os.environ.get("WORKSPACE_DIR", "/Users/mac/.openclaw/workspace")
+def _detect_workspace_si() -> str:
+    if os.environ.get("OPENCLAW_WORKSPACE") or os.environ.get("WORKSPACE_DIR"):
+        return os.environ.get("OPENCLAW_WORKSPACE") or os.environ.get("WORKSPACE_DIR")
+    if os.path.exists("/Users/mac/.openclaw/workspace"):
+        return "/Users/mac/.openclaw/workspace"
+    from pathlib import Path as _P
+    return str(_P(__file__).parent.parent)
+
+
+def _detect_sessions_si(workspace: str) -> str:
+    if os.environ.get("OPENCLAW_SESSIONS"):
+        return os.environ["OPENCLAW_SESSIONS"]
+    from pathlib import Path as _P
+    candidates = [
+        _P(workspace).parent / "agents/main/sessions",
+        _P("/Users/mac/.openclaw/agents/main/sessions"),
+        _P("/root/.openclaw/agents/main/sessions"),
+    ]
+    try:
+        home = _P.home()
+        for d in home.iterdir():
+            if d.name.endswith("-openclaw") and (d / "agents/main/sessions").exists():
+                candidates.append(d / "agents/main/sessions")
+    except Exception:
+        pass
+    return str(next((c for c in candidates if c.exists()), candidates[0]))
+
+
+WORKSPACE_DIR = _detect_workspace_si()
+SESSIONS_DIR = _detect_sessions_si(WORKSPACE_DIR)
 DB_PATH = os.path.join(WORKSPACE_DIR, "memory", "sessions.db")
 
 

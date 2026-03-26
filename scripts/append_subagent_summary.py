@@ -18,8 +18,18 @@ import argparse
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
-WORKSPACE_DIR = "/Users/mac/.openclaw/workspace"
+
+def _detect_workspace() -> str:
+    if os.environ.get("OPENCLAW_WORKSPACE"):
+        return os.environ["OPENCLAW_WORKSPACE"]
+    if Path("/Users/mac/.openclaw/workspace").exists():
+        return "/Users/mac/.openclaw/workspace"
+    return str(Path(__file__).parent.parent)
+
+
+WORKSPACE_DIR = _detect_workspace()
 MEMORY_DIR = os.path.join(WORKSPACE_DIR, "memory")
 
 

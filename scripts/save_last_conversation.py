@@ -12,9 +12,39 @@ import os
 import sys
 import glob
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
 
-SESSIONS_DIR = "/Users/mac/.openclaw/agents/main/sessions"
-WORKSPACE_DIR = "/Users/mac/.openclaw/workspace"
+
+def _detect_workspace() -> str:
+    if os.environ.get("OPENCLAW_WORKSPACE"):
+        return os.environ["OPENCLAW_WORKSPACE"]
+    if Path("/Users/mac/.openclaw/workspace").exists():
+        return "/Users/mac/.openclaw/workspace"
+    # VPS: scripts/ lives inside workspace/
+    return str(Path(__file__).parent.parent)
+
+
+def _detect_sessions(workspace_dir: str) -> str:
+    if os.environ.get("OPENCLAW_SESSIONS"):
+        return os.environ["OPENCLAW_SESSIONS"]
+    candidates = [
+        Path(workspace_dir).parent / "agents/main/sessions",
+        Path("/Users/mac/.openclaw/agents/main/sessions"),
+        Path("/root/.openclaw/agents/main/sessions"),
+    ]
+    # Also check agent-specific paths like /root/.nara-openclaw/agents/main/sessions
+    try:
+        home = Path.home()
+        for d in home.iterdir():
+            if d.name.endswith("-openclaw") and (d / "agents/main/sessions").exists():
+                candidates.append(d / "agents/main/sessions")
+    except Exception:
+        pass
+    return str(next((c for c in candidates if c.exists()), candidates[0]))
+
+
+WORKSPACE_DIR = _detect_workspace()
+SESSIONS_DIR = _detect_sessions(WORKSPACE_DIR)
 OUTPUT_FILE = os.path.join(WORKSPACE_DIR, "memory", "last-conversation.md")
 MEMORY_DIR = os.path.join(WORKSPACE_DIR, "memory")
 MAX_MESSAGES = 30

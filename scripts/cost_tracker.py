@@ -22,9 +22,35 @@ if _env_file.exists():
             _k, _v = _line.split("=", 1)
             os.environ.setdefault(_k.strip(), _v.strip())
 
-# Config
-SESSIONS_DIR = "/Users/mac/.openclaw/agents/main/sessions"
-WORKSPACE = "/Users/mac/.openclaw/workspace"
+# Config — auto-detect paths
+def _detect_workspace_ct() -> str:
+    if os.environ.get("OPENCLAW_WORKSPACE"):
+        return os.environ["OPENCLAW_WORKSPACE"]
+    if Path("/Users/mac/.openclaw/workspace").exists():
+        return "/Users/mac/.openclaw/workspace"
+    return str(Path(__file__).parent.parent)
+
+
+def _detect_sessions_ct(workspace: str) -> str:
+    if os.environ.get("OPENCLAW_SESSIONS"):
+        return os.environ["OPENCLAW_SESSIONS"]
+    candidates = [
+        Path(workspace).parent / "agents/main/sessions",
+        Path("/Users/mac/.openclaw/agents/main/sessions"),
+        Path("/root/.openclaw/agents/main/sessions"),
+    ]
+    try:
+        home = Path.home()
+        for d in home.iterdir():
+            if d.name.endswith("-openclaw") and (d / "agents/main/sessions").exists():
+                candidates.append(d / "agents/main/sessions")
+    except Exception:
+        pass
+    return str(next((c for c in candidates if c.exists()), candidates[0]))
+
+
+WORKSPACE = _detect_workspace_ct()
+SESSIONS_DIR = _detect_sessions_ct(WORKSPACE)
 COST_FILE = f"{WORKSPACE}/memory/cost_tracking.json"
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")

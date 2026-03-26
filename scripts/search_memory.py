@@ -16,7 +16,18 @@ import subprocess
 import json
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-WORKSPACE_DIR = os.environ.get("WORKSPACE_DIR", "/Users/mac/.openclaw/workspace")
+
+
+def _detect_workspace_sm() -> str:
+    if os.environ.get("OPENCLAW_WORKSPACE") or os.environ.get("WORKSPACE_DIR"):
+        return os.environ.get("OPENCLAW_WORKSPACE") or os.environ.get("WORKSPACE_DIR")
+    if os.path.exists("/Users/mac/.openclaw/workspace"):
+        return "/Users/mac/.openclaw/workspace"
+    from pathlib import Path
+    return str(Path(__file__).parent.parent)
+
+
+WORKSPACE_DIR = _detect_workspace_sm()
 
 
 def search_fts(query, limit=5):
