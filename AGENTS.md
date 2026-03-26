@@ -73,6 +73,8 @@ Di heartbeat: kalau ada topik penting hari ini yang belum tersimpan di daily not
 
 **Sebelum context reset / compaction:** Jalankan `python3 scripts/save_last_conversation.py` untuk snapshot 30 pesan terakhir ke `memory/last-conversation.md`. Script ini sekarang otomatis scan **semua** session files (termasuk subagent files) yang dimodifikasi dalam 4 jam terakhir — jadi context subagent tidak hilang.
 
+**🚨 Kalau Djeon ketik `/new`, `reset`, atau sejenisnya:** LANGSUNG jalankan `python3 scripts/save_last_conversation.py` SEBELUM acknowledge reset. Ini wajib — jangan biarkan session reset tanpa backup dulu.
+
 ### 🤖 Subagent Context Preservation
 
 Subagents run in separate JSONL files. To ensure their work survives `/new` session resets, **subagents MUST call this at the end of their task:**
