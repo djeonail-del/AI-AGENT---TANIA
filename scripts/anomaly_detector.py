@@ -123,7 +123,8 @@ def check_instagram_posting_gap() -> tuple[str | None, dict]:
                 data = json.loads(resp2.read().decode())
 
             if not data:
-                return "No carousels found in Supabase", {}
+                # Empty Supabase is normal — Nara generates content periodically
+                return None, {"carousels": "empty (normal)"}
 
             last = data[0]
             # If most recent scheduled is in future, it's fine
