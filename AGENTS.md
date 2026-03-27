@@ -22,8 +22,11 @@ Don't ask permission. Just do it.
 
 ## 📥 Before Replying — Cross-Channel Awareness
 
-Before replying in any session: check if `memory/cross-channel-inbox.md` was modified in the last 10 minutes.
-If yes, read it first — it contains recent messages from other channels you should be aware of.
+**WAJIB setiap reply:** Baca `memory/cross-channel-inbox.md` SEBELUM membalas pesan apapun di channel manapun (Telegram, Discord, dll).
+
+Jangan skip — file ini berisi pesan terbaru dari channel lain yang harus kamu ketahui sebelum menjawab. Ini bukan opsional.
+
+Cara baca: gunakan `read` tool pada `memory/cross-channel-inbox.md` setiap kali ada pesan masuk, sebelum menyusun reply.
 
 ## 💬 Last Conversation Context
 
