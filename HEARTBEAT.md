@@ -1,6 +1,6 @@
 # HEARTBEAT.md
 
-## 1. Save Last Conversation (Always Run First)
+## 1. Save Last Conversation + Unified Timeline (Always Run First)
 
 Jalankan ini di setiap heartbeat untuk backup percakapan terbaru:
 
@@ -9,6 +9,14 @@ cd /Users/mac/.openclaw/workspace && python3 scripts/save_last_conversation.py
 ```
 
 Ini memastikan kalau session crash/overload, konteks percakapan tidak hilang (worst case kehilangan 30 menit terakhir).
+
+Lalu build cross-channel unified timeline:
+
+```bash
+cd /Users/mac/.openclaw/workspace && python3 scripts/unified_timeline.py
+```
+
+Ini menyimpan timeline semua channel (Telegram DM + Discord) ke `memory/unified-timeline.md` — sehingga Tania tahu apa yang terjadi di semua channel dalam 24 jam terakhir.
 
 ---
 

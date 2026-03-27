@@ -4,11 +4,15 @@ save_last_conversation.py — Save last 30 messages from ALL recent sessions
 (within last 4 hours) to memory/last-conversation.md for seamless continuity
 across resets. Also captures subagent work from separate JSONL files.
 
+Phase 2: Channel-aware — each message is tagged with its source channel
+(Telegram DM, Discord #channel, Telegram Group, internal, etc.)
+
 Usage: python3 scripts/save_last_conversation.py [--session <file>] [--hours <n>]
 """
 
 import json
 import os
+import re
 import sys
 import glob
 from datetime import datetime, timezone, timedelta
@@ -52,6 +56,130 @@ MAX_MSG_LENGTH = 2000  # truncate very long messages in the markdown
 DEFAULT_HOURS = 4      # scan all files modified within this window
 
 
+# ─── Channel Extraction ───────────────────────────────────────────────────────
+
+def extract_channel_info(text: str) -> dict:
+    """
+    Parse channel metadata from user message text.
+
+    OpenClaw embeds untrusted metadata as JSON blocks in user messages.
+    This function extracts channel identity, channel name, and sender name.
+
+    Returns a dict with keys:
+      - channel_type: "telegram_dm" | "telegram_group" | "discord" | "internal" | "unknown"
+      - channel_label: Human-readable label, e.g. "[Telegram DM]", "[Discord #ops-monitoring]"
+      - sender: Display name of the sender
+      - is_group: bool
+    """
+    # Default
+    result = {
+        "channel_type": "unknown",
+        "channel_label": "[unknown]",
+        "sender": "User",
+        "is_group": False,
+    }
+
+    # Special: Subagent tasks
+    if "[Subagent Context]" in text or "[Subagent Task]" in text:
+        result["channel_type"] = "internal"
+        result["channel_label"] = "[Subagent]"
+        result["sender"] = "Subagent"
+        return result
+
+    # Special: Heartbeat / session reset / system messages
+    if ("Read HEARTBEAT.md" in text or
+            "A new session was started via /new" in text or
+            "HEARTBEAT_OK" in text):
+        result["channel_type"] = "internal"
+        result["channel_label"] = "[Heartbeat]"
+        result["sender"] = "System"
+        return result
+
+    # Try to extract the JSON metadata block from "Conversation info (untrusted metadata):"
+    # Pattern: ```json ... ``` block after "Conversation info"
+    conv_match = re.search(
+        r'Conversation info \(untrusted metadata\):\s*```json\s*(\{.*?\})\s*```',
+        text, re.DOTALL
+    )
+    if not conv_match:
+        # Try to find any JSON block with sender_id
+        conv_match = re.search(r'(\{[^{}]*"sender_id"[^{}]*\})', text, re.DOTALL)
+
+    if conv_match:
+        try:
+            meta = json.loads(conv_match.group(1))
+        except Exception:
+            meta = {}
+    else:
+        meta = {}
+
+    # Extract sender name from Sender metadata block too
+    sender_match = re.search(
+        r'Sender \(untrusted metadata\):\s*```json\s*(\{.*?\})\s*```',
+        text, re.DOTALL
+    )
+    sender_meta = {}
+    if sender_match:
+        try:
+            sender_meta = json.loads(sender_match.group(1))
+        except Exception:
+            pass
+
+    # Get sender name (prefer sender_meta name, fall back to meta sender)
+    sender_name = (
+        sender_meta.get("name") or
+        meta.get("sender") or
+        "User"
+    )
+    result["sender"] = sender_name
+
+    if not meta:
+        # No metadata found — classify as internal/unknown
+        result["channel_type"] = "internal"
+        result["channel_label"] = "[internal]"
+        result["sender"] = "System"
+        return result
+
+    # Determine channel type
+    conversation_label = meta.get("conversation_label", "")
+    group_subject = meta.get("group_subject", "")
+    is_group_chat = meta.get("is_group_chat", False)
+
+    # Discord detection: conversation_label contains "Guild" OR group_subject starts with "#"
+    is_discord = (
+        "Guild" in conversation_label or
+        (group_subject.startswith("#"))
+    )
+
+    if is_discord:
+        result["channel_type"] = "discord"
+        result["is_group"] = True
+        if group_subject:
+            result["channel_label"] = f"[Discord {group_subject}]"
+        else:
+            result["channel_label"] = "[Discord]"
+        return result
+
+    # Telegram group detection: is_group_chat = true and not Discord
+    if is_group_chat:
+        result["channel_type"] = "telegram_group"
+        result["is_group"] = True
+        if group_subject:
+            result["channel_label"] = f"[Telegram Group: {group_subject}]"
+        else:
+            result["channel_label"] = "[Telegram Group]"
+        return result
+
+    # Telegram DM: has sender_id, not a group
+    if meta.get("sender_id"):
+        result["channel_type"] = "telegram_dm"
+        result["channel_label"] = "[Telegram DM]"
+        result["is_group"] = False
+        return result
+
+    return result
+
+
 def find_latest_session():
     """Find the most recently modified .jsonl session file."""
     pattern = os.path.join(SESSIONS_DIR, "*.jsonl")
@@ -76,6 +204,7 @@ def parse_session(filepath):
     """Parse a JSONL session file and extract user/assistant text messages."""
     messages = []
     session_meta = {}
+    last_user_channel = None  # track for inferring assistant channel
 
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
@@ -123,6 +252,27 @@ def parse_session(filepath):
             except Exception:
                 ts = None
 
+            # ── Channel extraction ────────────────────────────────────────────
+            if role == "user":
+                channel_info = extract_channel_info(text)
+                last_user_channel = channel_info  # remember for assistant messages
+            else:
+                # Assistant inherits channel from preceding user message in this session
+                if last_user_channel:
+                    channel_info = {
+                        "channel_type": last_user_channel["channel_type"],
+                        "channel_label": last_user_channel["channel_label"],
+                        "sender": "Tania",
+                        "is_group": last_user_channel["is_group"],
+                    }
+                else:
+                    channel_info = {
+                        "channel_type": "unknown",
+                        "channel_label": "[unknown]",
+                        "sender": "Tania",
+                        "is_group": False,
+                    }
+
             messages.append({
                 "role": role,
                 "text": text,
@@ -130,6 +280,7 @@ def parse_session(filepath):
                 "timestamp_raw": timestamp_str,
                 "session_file": os.path.basename(filepath),
                 "session_id": session_meta.get("id", os.path.basename(filepath)),
+                "channel_info": channel_info,
             })
 
     return session_meta, messages
@@ -139,6 +290,41 @@ def truncate(text, max_len=MAX_MSG_LENGTH):
     if len(text) <= max_len:
         return text
     return text[:max_len] + f"\n\n_[truncated — {len(text) - max_len} more chars]_"
+
+
+def build_channel_activity_summary(messages: list) -> list[str]:
+    """
+    Build a 'Channel Activity' summary showing which channels were active.
+    Returns a list of markdown lines.
+    """
+    from collections import defaultdict, Counter
+
+    channel_stats = defaultdict(lambda: {"count": 0, "last_ts": None, "label": ""})
+
+    for msg in messages:
+        ci = msg.get("channel_info", {})
+        label = ci.get("channel_label", "[unknown]")
+        ts = msg.get("timestamp")
+
+        channel_stats[label]["count"] += 1
+        channel_stats[label]["label"] = label
+        if ts and (channel_stats[label]["last_ts"] is None or ts > channel_stats[label]["last_ts"]):
+            channel_stats[label]["last_ts"] = ts
+
+    if not channel_stats:
+        return []
+
+    lines = ["## 📡 Channel Activity", ""]
+    for label, stats in sorted(channel_stats.items()):
+        last_str = ""
+        if stats["last_ts"]:
+            last_str = f" — last: {stats['last_ts'].strftime('%H:%M UTC')}"
+        lines.append(f"- **{label}**: {stats['count']} messages{last_str}")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    return lines
 
 
 def format_markdown(messages, session_files, hours_scanned):
@@ -161,6 +347,11 @@ def format_markdown(messages, session_files, hours_scanned):
 
     lines += ["---", ""]
 
+    # Channel Activity summary (Phase 2)
+    channel_summary = build_channel_activity_summary(messages)
+    if channel_summary:
+        lines.extend(channel_summary)
+
     prev_session = None
     for msg in messages:
         # Show session divider when session changes
@@ -173,9 +364,21 @@ def format_markdown(messages, session_files, hours_scanned):
         role = msg["role"]
         ts = msg["timestamp"]
         ts_label = ts.strftime("%H:%M UTC") if ts else ""
-        role_icon = "🧑 **User**" if role == "user" else "🤖 **Assistant**"
+        ci = msg.get("channel_info", {})
+        channel_label = ci.get("channel_label", "")
+        sender = ci.get("sender", "")
 
-        lines.append(f"### {role_icon}  <sub>{ts_label}</sub>")
+        if role == "user":
+            role_icon = f"🧑 **{sender}**" if sender and sender not in ("User", "System") else "🧑 **User**"
+        else:
+            role_icon = "🤖 **Tania**"
+
+        # Phase 2: include channel label in header
+        if channel_label and channel_label not in ("[unknown]", "[internal]", "[Heartbeat]", "[Subagent]"):
+            lines.append(f"### {role_icon} {channel_label}  <sub>{ts_label}</sub>")
+        else:
+            lines.append(f"### {role_icon}  <sub>{ts_label}</sub>")
+
         lines.append("")
         lines.append(truncate(msg["text"]))
         lines.append("")
@@ -263,6 +466,15 @@ def append_daily_summary(messages, session_files, hours_scanned):
     samples = [m["text"][:80].replace("\n", " ") for m in new_messages if m["role"] == "user"][:3]
     topic_snippet = " | ".join(samples) if samples else "(no user messages)"
 
+    # Channel activity summary for daily notes
+    from collections import defaultdict
+    channel_counts = defaultdict(int)
+    for m in new_messages:
+        ci = m.get("channel_info", {})
+        label = ci.get("channel_label", "[unknown]")
+        channel_counts[label] += 1
+    channel_summary_str = ", ".join(f"{lbl}: {cnt}" for lbl, cnt in sorted(channel_counts.items()))
+
     file_list = "\n".join(f"  - `{os.path.basename(sf)}`" for sf in new_session_files)
 
     summary_block = (
@@ -271,6 +483,7 @@ def append_daily_summary(messages, session_files, hours_scanned):
         f"{file_list}\n"
         f"- **Messages:** {user_count} user, {asst_count} assistant\n"
         f"- **Range:** {first_ts} → {last_ts}\n"
+        f"- **Channels:** {channel_summary_str}\n"
         f"- **Topics (sample):** {topic_snippet}\n"
     )
 

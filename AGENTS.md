@@ -16,6 +16,7 @@ Before doing anything else:
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 5. **Read `memory/last-conversation.md`** — context of the last conversation (see below)
+6. **Read `memory/unified-timeline.md`** — cross-channel context from last 24h (Telegram DM + Discord channels)
 
 Don't ask permission. Just do it.
 
