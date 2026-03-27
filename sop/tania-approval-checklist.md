@@ -111,3 +111,17 @@ Setelah setiap review (approve OR reject), notify Djeon:
 ---
 
 _Checklist ini di-maintain oleh Tania. Last updated: 2026-03-26_
+
+---
+
+## 7. Aturan Penggunaan Gambar Orang/Tokoh (Added 2026-03-27)
+
+### Jika konten menggunakan gambar orang/manusia:
+- **Orang umum (ilustrasi):** Gunakan orang Asia/Indonesia — BUKAN bule/caucasian
+- **Tokoh publik (politisi, pengusaha, artis, dll):** Pastikan wajah/penampilan mirip dengan tokoh asli — tidak boleh asal generate AI face yang tidak menyerupai
+
+### Checklist tambahan di review design:
+- [ ] Kalau ada gambar orang → apakah orang Asia/Indonesia? (bukan bule)
+- [ ] Kalau ada tokoh publik → apakah wajahnya menyerupai tokoh asli?
+- [ ] Jika tidak sesuai → ❌ Reject dengan catatan "ganti ke orang lokal/Indonesia" atau "tokoh tidak menyerupai [nama]"
+

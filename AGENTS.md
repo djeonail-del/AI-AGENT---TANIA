@@ -20,6 +20,11 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
+## 📥 Before Replying — Cross-Channel Awareness
+
+Before replying in any session: check if `memory/cross-channel-inbox.md` was modified in the last 10 minutes.
+If yes, read it first — it contains recent messages from other channels you should be aware of.
+
 ## 💬 Last Conversation Context
 
 `memory/last-conversation.md` contains the last 30 user+assistant messages from the previous session, formatted as readable markdown with timestamps.
