@@ -33,6 +33,7 @@ from bot import (
     signed_request,
     log_order,
     log_event,
+    tg_send,
     REST_BASE,
     API_KEY,
 )
@@ -42,6 +43,7 @@ from prepare import SYMBOL
 async def run():
     print("=== EMERGENCY CLOSE ALL ===")
     set_pause(True, "emergency_close_manual")
+    await tg_send(f"PANIC BUTTON pressed\nClosing all {SYMBOL} positions via reduce-only.\nBot PAUSED.", "err")
 
     async with httpx.AsyncClient(timeout=15.0) as client:
         # Cancel all open orders for symbol
@@ -55,6 +57,7 @@ async def run():
         pos = await get_position(client, SYMBOL)
         if pos is None:
             print(f"✓ No open position for {SYMBOL}")
+            await tg_send(f"No open position. All orders cancelled.", "ok")
         else:
             amt = float(pos["positionAmt"])
             side = "SELL" if amt > 0 else "BUY"
@@ -62,6 +65,7 @@ async def run():
             resp = await place_market_order(client, SYMBOL, side, abs(amt), reduce_only=True)
             log_order(side, abs(amt), 0, "emergency_close", resp)
             print(f"✓ Close order sent: {resp.get('orderId')}")
+            await tg_send(f"Closed {abs(amt)} {SYMBOL} via reduce-only.\nOrder ID: {resp.get('orderId')}", "ok")
 
     log_event("WARN", "emergency_close_executed", "panic_button")
     print("=== DONE. Bot is PAUSED. Restart manually via: python -c 'from bot import set_pause; set_pause(False)' ===")

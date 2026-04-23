@@ -58,7 +58,42 @@ POLL_INTERVAL = int(os.environ.get("BOT_POLL_INTERVAL", "30"))  # seconds
 # account equity. This lets multiple bots share one Binance account safely.
 VIRTUAL_CAPITAL_START = float(os.environ.get("BOT_VIRTUAL_CAPITAL", "5000"))
 
+# Telegram alerts (optional — bot works without these env vars).
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_TRADING_BOT_TOKEN", "").strip()
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_TRADING_CHAT_ID", "").strip()
+
 RECV_WINDOW = 5000
+
+
+# ---------------------------------------------------------------------------
+# Telegram (non-blocking, failure never crashes bot)
+# ---------------------------------------------------------------------------
+
+async def tg_send(text: str, level: str = "info") -> None:
+    """Send a Telegram message. No-op if token/chat_id not configured.
+
+    Never raises — failure just logs a warning. Alerts are not allowed to
+    break the trading loop.
+    """
+    if not (TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID):
+        return
+    emoji = {"info": "ℹ️", "ok": "✅", "warn": "⚠️", "err": "🔴", "trade": "💱"}.get(level, "")
+    symbol = os.environ.get("BOT_SYMBOL", "BTCUSDT").lower()
+    body = f"{emoji} [tania-{symbol}] {text}"
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as tgc:
+            await tgc.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": body})
+    except Exception as e:
+        log.warning(f"tg_send failed: {e}")
+
+
+def tg_fire_and_forget(text: str, level: str = "info") -> None:
+    """Schedule a Telegram send without awaiting. For use in sync contexts."""
+    try:
+        asyncio.get_event_loop().create_task(tg_send(text, level))
+    except Exception:
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -345,6 +380,15 @@ async def run():
     log.info(f"[tania-{SYMBOL.lower()}] Strategy: {strategy.params()}")
     log.info(f"[tania-{SYMBOL.lower()}] Virtual capital: ${VIRTUAL_CAPITAL_START:.2f} (Tania's slice of shared account)")
 
+    await tg_send(
+        f"Bot started\n"
+        f"Symbol: {SYMBOL} | Leverage: {LEVERAGE}x\n"
+        f"Virtual capital: ${VIRTUAL_CAPITAL_START:.0f}\n"
+        f"Strategy: {strategy.params().get('name', '?')}\n"
+        f"SL/TP: {STOP_LOSS_PCT*100:.1f}% / {TAKE_PROFIT_PCT*100:.1f}%",
+        "ok",
+    )
+
     async with httpx.AsyncClient(timeout=15.0) as client:
         # Setup
         filters = await get_symbol_filters(client, SYMBOL)
@@ -381,6 +425,10 @@ async def run():
                 if should_pause:
                     log.error(f"[KILL SWITCH] {reason}")
                     set_pause(True, reason)
+                    await tg_send(
+                        f"KILL SWITCH\n{reason}\nVirtual equity: ${virtual_equity:.2f}\nBot PAUSED until manual resume.",
+                        "err",
+                    )
                     if pos:
                         amt = float(pos["positionAmt"])
                         side = "SELL" if amt > 0 else "BUY"
@@ -403,11 +451,19 @@ async def run():
                         resp = await place_market_order(client, SYMBOL, "BUY", qty)
                         log_order("BUY", qty, price, "signal_long", resp)
                         log.info(f"[{SYMBOL}] OPENED LONG {qty} @ ~{price:.2f}")
+                        await tg_send(
+                            f"OPEN LONG {SYMBOL}\nQty: {qty}\nPrice: ${price:,.2f}\nVirt eq: ${virtual_equity:.2f}",
+                            "trade",
+                        )
                     elif signal == "SHORT":
                         qty = calc_position_qty(virtual_equity, price, step_size, min_qty)
                         resp = await place_market_order(client, SYMBOL, "SELL", qty)
                         log_order("SELL", qty, price, "signal_short", resp)
                         log.info(f"[{SYMBOL}] OPENED SHORT {qty} @ ~{price:.2f}")
+                        await tg_send(
+                            f"OPEN SHORT {SYMBOL}\nQty: {qty}\nPrice: ${price:,.2f}\nVirt eq: ${virtual_equity:.2f}",
+                            "trade",
+                        )
                 else:
                     amt = float(pos["positionAmt"])
                     entry = float(pos["entryPrice"])
@@ -424,17 +480,34 @@ async def run():
                         resp = await place_market_order(client, SYMBOL, close_side, abs(amt), reduce_only=True)
                         log_order(close_side, abs(amt), price, "stop_loss", resp)
                         log.info(f"STOPPED OUT {current_side} @ {price:.2f} ({pct*100:.2f}%)")
+                        await tg_send(
+                            f"STOP LOSS {current_side} {SYMBOL}\n"
+                            f"Entry ${entry:,.2f} → Exit ${price:,.2f}\n"
+                            f"PnL: {pct*100:.2f}%",
+                            "warn",
+                        )
                     elif pct >= TAKE_PROFIT_PCT:
                         close_side = "SELL" if amt > 0 else "BUY"
                         resp = await place_market_order(client, SYMBOL, close_side, abs(amt), reduce_only=True)
                         log_order(close_side, abs(amt), price, "take_profit", resp)
                         log.info(f"TOOK PROFIT {current_side} @ {price:.2f} (+{pct*100:.2f}%)")
+                        await tg_send(
+                            f"TAKE PROFIT {current_side} {SYMBOL}\n"
+                            f"Entry ${entry:,.2f} → Exit ${price:,.2f}\n"
+                            f"PnL: +{pct*100:.2f}%",
+                            "ok",
+                        )
                     elif signal in ("LONG", "SHORT") and signal != current_side:
-                        # Signal flip → close, then open opposite
                         close_side = "SELL" if amt > 0 else "BUY"
                         resp = await place_market_order(client, SYMBOL, close_side, abs(amt), reduce_only=True)
                         log_order(close_side, abs(amt), price, "signal_flip_close", resp)
                         log.info(f"FLIPPED — closed {current_side} @ {price:.2f}")
+                        await tg_send(
+                            f"FLIP {SYMBOL}: closed {current_side}\n"
+                            f"Entry ${entry:,.2f} → Exit ${price:,.2f} ({pct*100:+.2f}%)\n"
+                            f"Opening {signal} next cycle",
+                            "trade",
+                        )
 
                 error_count = 0  # reset on successful loop
 
@@ -448,6 +521,13 @@ async def run():
                 if error_count >= 10:
                     log.error("10 consecutive errors — pausing bot.")
                     set_pause(True, "error_cascade")
+                    try:
+                        await tg_send(
+                            f"ERROR CASCADE\n10 consecutive loop errors.\nLast: {str(e)[:200]}\nBot PAUSED.",
+                            "err",
+                        )
+                    except Exception:
+                        pass
 
             await asyncio.sleep(POLL_INTERVAL)
 
