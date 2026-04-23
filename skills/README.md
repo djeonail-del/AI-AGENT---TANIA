@@ -11,6 +11,8 @@ _Ini adalah "skill memory" ala Hermes Agent._
 |-------|------|---------|
 | Baca file .docx dari Telegram | `read-docx.md` | 2026-03-22 |
 | Ambil transcript YouTube via TranscriptAPI | `youtube-transcript.md` | 2026-04-23 |
+| AutoResearch pattern (Karpathy) — iterative optimization loop | `autoresearch-pattern.md` | 2026-04-23 |
+| Binance Derivatives API (USDⓈ-M, COIN-M, Options, PM) | `binance-derivatives-api.md` | 2026-04-23 |
 
 ---
 
