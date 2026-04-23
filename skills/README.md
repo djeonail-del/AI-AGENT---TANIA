@@ -10,6 +10,7 @@ _Ini adalah "skill memory" ala Hermes Agent._
 | Skill | File | Tanggal |
 |-------|------|---------|
 | Baca file .docx dari Telegram | `read-docx.md` | 2026-03-22 |
+| Ambil transcript YouTube via TranscriptAPI | `youtube-transcript.md` | 2026-04-23 |
 
 ---
 
@@ -17,4 +18,4 @@ _Ini adalah "skill memory" ala Hermes Agent._
 
 Skill docs ini adalah referensi aku ke depannya. Kalau ada masalah serupa, aku cek sini dulu sebelum coba-coba lagi.
 
-_Last updated: 2026-03-22_
+_Last updated: 2026-04-23_
