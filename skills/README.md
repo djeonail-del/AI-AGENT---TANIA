@@ -13,6 +13,7 @@ _Ini adalah "skill memory" ala Hermes Agent._
 | Ambil transcript YouTube via TranscriptAPI | `youtube-transcript.md` | 2026-04-23 |
 | AutoResearch pattern (Karpathy) — iterative optimization loop | `autoresearch-pattern.md` | 2026-04-23 |
 | Binance Derivatives API (USDⓈ-M, COIN-M, Options, PM) | `binance-derivatives-api.md` | 2026-04-23 |
+| Trading bot (Fase 1 MVP) — live deploy runbook | `trading-bot-deploy.md` | 2026-04-23 |
 
 ---
 
