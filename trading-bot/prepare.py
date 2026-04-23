@@ -31,8 +31,10 @@ import pandas as pd
 # Fixed constants — DO NOT CHANGE
 # ---------------------------------------------------------------------------
 
-SYMBOL = "BTCUSDT"
-INTERVAL = "5m"
+# SYMBOL and INTERVAL are env-configurable so Tania can share a Binance
+# account with another bot (e.g. Zara on BTCUSDT) by trading a different pair.
+SYMBOL = os.environ.get("BOT_SYMBOL", "BTCUSDT")
+INTERVAL = os.environ.get("BOT_INTERVAL", "5m")
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
@@ -134,6 +136,7 @@ async def load_historical(days: int = 365 + 90, cache: bool = True) -> pd.DataFr
     Returns ~130k candles. Cached as parquet for fast reload.
     """
     cache_path = DATA_DIR / f"{SYMBOL}_{INTERVAL}_{days}d.parquet"
+    # Ensure symbol cache is per-symbol
     if cache and cache_path.exists():
         age_hours = (time.time() - cache_path.stat().st_mtime) / 3600
         if age_hours < 24:

@@ -53,6 +53,11 @@ TAKE_PROFIT_PCT = float(os.environ.get("BOT_TAKE_PROFIT_PCT", "0.02"))
 MAX_DRAWDOWN_PCT = float(os.environ.get("BOT_MAX_DD_PCT", "0.05"))  # pause if -5% in 24h
 POLL_INTERVAL = int(os.environ.get("BOT_POLL_INTERVAL", "30"))  # seconds
 
+# Virtual capital: how much of the shared testnet account Tania treats as "her share".
+# Sizing and kill-switch computations are scoped to this virtual pool, not total
+# account equity. This lets multiple bots share one Binance account safely.
+VIRTUAL_CAPITAL_START = float(os.environ.get("BOT_VIRTUAL_CAPITAL", "5000"))
+
 RECV_WINDOW = 5000
 
 
@@ -110,6 +115,61 @@ async def get_position(client: httpx.AsyncClient, symbol: str) -> dict | None:
         if abs(amt) > 1e-9:
             return p
     return None
+
+
+async def get_realized_pnl_since(
+    client: httpx.AsyncClient, symbol: str, since_ms: int
+) -> float:
+    """Sum of REALIZED_PNL income records for `symbol` since `since_ms`.
+
+    This is Binance's authoritative PnL tally for this symbol. Zara's BTCUSDT
+    trades never appear here because we filter by symbol.
+    """
+    total = 0.0
+    start = since_ms
+    while True:
+        data = await signed_request(
+            client, "GET", "/fapi/v1/income",
+            {"symbol": symbol, "incomeType": "REALIZED_PNL",
+             "startTime": start, "limit": 1000},
+        )
+        if not data:
+            break
+        for row in data:
+            total += float(row["income"])
+        if len(data) < 1000:
+            break
+        # Paginate forward
+        last_ts = int(data[-1]["time"])
+        if last_ts <= start:
+            break
+        start = last_ts + 1
+    return total
+
+
+async def get_commission_since(
+    client: httpx.AsyncClient, symbol: str, since_ms: int
+) -> float:
+    """Sum of COMMISSION (fees) for `symbol` since `since_ms`. Returns negative number."""
+    total = 0.0
+    start = since_ms
+    while True:
+        data = await signed_request(
+            client, "GET", "/fapi/v1/income",
+            {"symbol": symbol, "incomeType": "COMMISSION",
+             "startTime": start, "limit": 1000},
+        )
+        if not data:
+            break
+        for row in data:
+            total += float(row["income"])
+        if len(data) < 1000:
+            break
+        last_ts = int(data[-1]["time"])
+        if last_ts <= start:
+            break
+        start = last_ts + 1
+    return total
 
 
 async def set_leverage(client: httpx.AsyncClient, symbol: str, lev: int):
@@ -194,6 +254,7 @@ def log_order(side: str, qty: float, price: float, reason: str, order_resp: dict
 
 
 def log_equity(equity: float, unrealized_pnl: float = 0.0):
+    """Log virtual equity (Tania's own, not account total)."""
     with db_conn() as c:
         c.execute(
             "INSERT INTO equity_curve (ts, equity, unrealized_pnl) VALUES (?, ?, ?)",
@@ -208,6 +269,24 @@ def get_equity_24h_ago() -> float | None:
             "SELECT equity FROM equity_curve WHERE ts <= ? ORDER BY ts DESC LIMIT 1", (cutoff,)
         ).fetchone()
         return row["equity"] if row else None
+
+
+def get_bot_start_ms() -> int:
+    """Return the timestamp (ms) when this bot instance first started.
+
+    Used to filter Binance income history to only count trades made by Tania,
+    not any prior activity on the shared account.
+    """
+    with db_conn() as c:
+        row = c.execute("SELECT value FROM state WHERE key = 'bot_start_ms'").fetchone()
+        if row:
+            return int(row["value"])
+        now_ms = int(time.time() * 1000)
+        c.execute(
+            "INSERT INTO state (key, value, updated_ts) VALUES ('bot_start_ms', ?, ?)",
+            (str(now_ms), int(time.time())),
+        )
+        return now_ms
 
 
 def is_paused() -> bool:
@@ -259,10 +338,12 @@ def calc_position_qty(equity: float, price: float, step_size: float, min_qty: fl
 
 async def run():
     db_init(DB_PATH)
-    log_event("INFO", "bot_start", f"leverage={LEVERAGE} size={POSITION_SIZE_PCT} sl={STOP_LOSS_PCT} tp={TAKE_PROFIT_PCT}")
+    bot_start_ms = get_bot_start_ms()
+    log_event("INFO", "bot_start", f"symbol={SYMBOL} leverage={LEVERAGE} size={POSITION_SIZE_PCT} sl={STOP_LOSS_PCT} tp={TAKE_PROFIT_PCT} virtual_capital=${VIRTUAL_CAPITAL_START:.0f} bot_start_ms={bot_start_ms}")
 
     strategy = Strategy()
-    log.info(f"Strategy: {strategy.params()}")
+    log.info(f"[tania-{SYMBOL.lower()}] Strategy: {strategy.params()}")
+    log.info(f"[tania-{SYMBOL.lower()}] Virtual capital: ${VIRTUAL_CAPITAL_START:.2f} (Tania's slice of shared account)")
 
     async with httpx.AsyncClient(timeout=15.0) as client:
         # Setup
@@ -281,22 +362,25 @@ async def run():
                 # Poll market data
                 df = await fetch_klines(SYMBOL, INTERVAL, limit=200)
 
-                # Equity + kill switch
-                equity = await get_balance(client)
+                # Position + realized PnL scoped to OUR symbol since bot start
                 pos = await get_position(client, SYMBOL)
                 upnl = float(pos["unRealizedProfit"]) if pos else 0.0
-                log_equity(equity, upnl)
+                realized = await get_realized_pnl_since(client, SYMBOL, bot_start_ms)
+                commission = await get_commission_since(client, SYMBOL, bot_start_ms)
+                virtual_equity = VIRTUAL_CAPITAL_START + realized + commission + upnl
+                log_equity(virtual_equity, upnl)
+
+                account_balance = await get_balance(client)  # for logging only
 
                 if is_paused():
-                    log.info(f"[PAUSED] equity=${equity:.2f} pos={'FLAT' if not pos else pos['positionAmt']}")
+                    log.info(f"[PAUSED] virtual_eq=${virtual_equity:.2f} acct=${account_balance:.2f} pos={'FLAT' if not pos else pos['positionAmt']}")
                     await asyncio.sleep(POLL_INTERVAL)
                     continue
 
-                should_pause, reason = check_kill_switch(equity)
+                should_pause, reason = check_kill_switch(virtual_equity)
                 if should_pause:
                     log.error(f"[KILL SWITCH] {reason}")
                     set_pause(True, reason)
-                    # Close any open position via reduce-only
                     if pos:
                         amt = float(pos["positionAmt"])
                         side = "SELL" if amt > 0 else "BUY"
@@ -309,21 +393,21 @@ async def run():
                 price = float(df["close"].iloc[-1])
 
                 if signal != last_signal:
-                    log.info(f"Signal: {signal} @ {price:.2f} | equity=${equity:.2f} | pos={'FLAT' if not pos else pos['positionAmt']}")
+                    log.info(f"[{SYMBOL}] Signal: {signal} @ {price:.2f} | virt_eq=${virtual_equity:.2f} | pos={'FLAT' if not pos else pos['positionAmt']}")
                     last_signal = signal
 
                 # Decide action
                 if pos is None:
                     if signal == "LONG":
-                        qty = calc_position_qty(equity, price, step_size, min_qty)
+                        qty = calc_position_qty(virtual_equity, price, step_size, min_qty)
                         resp = await place_market_order(client, SYMBOL, "BUY", qty)
                         log_order("BUY", qty, price, "signal_long", resp)
-                        log.info(f"OPENED LONG {qty} @ ~{price:.2f}")
+                        log.info(f"[{SYMBOL}] OPENED LONG {qty} @ ~{price:.2f}")
                     elif signal == "SHORT":
-                        qty = calc_position_qty(equity, price, step_size, min_qty)
+                        qty = calc_position_qty(virtual_equity, price, step_size, min_qty)
                         resp = await place_market_order(client, SYMBOL, "SELL", qty)
                         log_order("SELL", qty, price, "signal_short", resp)
-                        log.info(f"OPENED SHORT {qty} @ ~{price:.2f}")
+                        log.info(f"[{SYMBOL}] OPENED SHORT {qty} @ ~{price:.2f}")
                 else:
                     amt = float(pos["positionAmt"])
                     entry = float(pos["entryPrice"])

@@ -3,6 +3,22 @@
 Autonomous trading bot for Binance USDⓈ-M Futures testnet.
 Runs 24/7 in Docker. Pattern: Karpathy's autoresearch adapted to trading.
 
+## Shared account with Zara (important!)
+
+Tania dan Zara pakai **akun Binance testnet yang sama** tapi pair berbeda:
+
+| Bot | Symbol | Virtual capital |
+|-----|--------|-----------------|
+| Zara (BTCUSDT) | `BTCUSDT` | (Zara's own tracking) |
+| **Tania (this bot)** | `ETHUSDT` | `$5000` (env `BOT_VIRTUAL_CAPITAL`) |
+
+Key isolation features (in `bot.py`):
+- **`BOT_SYMBOL`** env var — trade only this pair
+- **Virtual equity** = `BOT_VIRTUAL_CAPITAL + realized_pnl(SYMBOL) + commission(SYMBOL) + unrealized_pnl`
+- **Position sizing** uses virtual equity, not account balance → Tania can't over-allocate into Zara's share
+- **Kill switch** scopes to virtual equity drawdown → Zara's PnL can't trigger Tania's pause
+- **Realized PnL source** = Binance `/fapi/v1/income?symbol=ETHUSDT&incomeType=REALIZED_PNL` (authoritative, filtered by symbol)
+
 ## What's in this repo
 
 ```
