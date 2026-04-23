@@ -9,6 +9,8 @@ memory/heartbeat-state.json
 # ─── Credentials & secrets ───────────────────────────────────────────────────
 .env
 .env.*
+!.env.example
+!*.env.example
 *.key
 *.pem
 secrets.json
@@ -37,3 +39,9 @@ venv/
 # ─── Node ────────────────────────────────────────────────────────────────────
 node_modules/
 npm-debug.log*
+
+# Trading bot runtime artifacts
+trading-bot/data/*.parquet
+trading-bot/db/*.db
+trading-bot/db/*.log
+trading-bot/.env

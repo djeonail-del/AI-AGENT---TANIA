@@ -1,0 +1,32 @@
+services:
+  tania-bot:
+    build: .
+    container_name: tania-bot
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./db:/app/db
+      - ./data:/app/data
+    command: ["python", "-u", "bot.py"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  tania-research:
+    build: .
+    container_name: tania-research
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./db:/app/db
+      - ./data:/app/data
+    command: ["python", "-u", "research.py"]
+    depends_on:
+      - tania-bot
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
